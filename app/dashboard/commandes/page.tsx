@@ -3,10 +3,13 @@
 import { useState, useEffect } from "react"
 import api from "@/lib/api"
 import NouvelleCommandeModal from "@/components/NouvelleCommandeModal"
+import PaiementModal from "@/components/PaiementModal"
 
 export default function Commandes() {
   const [commandes, setCommandes] = useState<any[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isPaiementOpen, setIsPaiementOpen] = useState(false)
+  const [montantPaiement, setMontantPaiement] = useState(0)
   const [loading, setLoading] = useState(true)
 
   const fetchCommandes = async () => {
@@ -62,6 +65,12 @@ export default function Commandes() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSuccess={fetchCommandes}
+      />
+
+      <PaiementModal
+        isOpen={isPaiementOpen}
+        onClose={() => setIsPaiementOpen(false)}
+        montant={montantPaiement}
       />
 
       <div className="flex justify-between items-center mb-8">
@@ -168,17 +177,28 @@ export default function Commandes() {
                     </p>
                   </td>
                   <td className="p-4">
-                    <select
-                      value={commande.status}
-                      onChange={(e) => handleUpdateStatus(commande.id, e.target.value)}
-                      className="border border-gray-200 rounded-lg px-2 py-1 text-xs outline-none text-gray-600"
-                    >
-                      <option value="pending">En attente</option>
-                      <option value="confirmed">Confirmé</option>
-                      <option value="shipped">Expédié</option>
-                      <option value="delivered">Livré</option>
-                      <option value="cancelled">Annulé</option>
-                    </select>
+                    <div className="flex gap-2">
+                      <select
+                        value={commande.status}
+                        onChange={(e) => handleUpdateStatus(commande.id, e.target.value)}
+                        className="border border-gray-200 rounded-lg px-2 py-1 text-xs outline-none text-gray-600"
+                      >
+                        <option value="pending">En attente</option>
+                        <option value="confirmed">Confirmé</option>
+                        <option value="shipped">Expédié</option>
+                        <option value="delivered">Livré</option>
+                        <option value="cancelled">Annulé</option>
+                      </select>
+                      <button
+                        onClick={() => {
+                          setMontantPaiement(commande.total)
+                          setIsPaiementOpen(true)
+                        }}
+                        className="text-xs bg-violet-50 text-violet-600 hover:bg-violet-100 rounded-lg px-2 py-1 transition-colors"
+                      >
+                        💳 Payer
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
