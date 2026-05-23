@@ -5,6 +5,13 @@ import api from "@/lib/api"
 import NouvelleCommandeModal from "@/components/NouvelleCommandeModal"
 import PaiementModal from "@/components/PaiementModal"
 
+const cardStyle = {
+  background: "rgba(255,255,255,0.03)",
+  border: "1px solid rgba(255,255,255,0.07)",
+  borderRadius: "16px",
+  padding: "1.25rem",
+}
+
 export default function Commandes() {
   const [commandes, setCommandes] = useState<any[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -24,9 +31,7 @@ export default function Commandes() {
     }
   }
 
-  useEffect(() => {
-    fetchCommandes()
-  }, [])
+  useEffect(() => { fetchCommandes() }, [])
 
   const handleUpdateStatus = async (id: string, status: string) => {
     try {
@@ -37,14 +42,14 @@ export default function Commandes() {
     }
   }
 
-  const getStatusColor = (status: string) => {
+  const getStatusStyle = (status: string) => {
     switch (status) {
-      case "pending": return "bg-orange-50 text-orange-500"
-      case "confirmed": return "bg-blue-50 text-blue-500"
-      case "shipped": return "bg-violet-50 text-violet-500"
-      case "delivered": return "bg-green-50 text-green-500"
-      case "cancelled": return "bg-red-50 text-red-500"
-      default: return "bg-gray-50 text-gray-500"
+      case "pending": return { background: "rgba(251,191,36,0.1)", color: "#fbbf24", border: "1px solid rgba(251,191,36,0.2)" }
+      case "confirmed": return { background: "rgba(59,130,246,0.1)", color: "#60a5fa", border: "1px solid rgba(59,130,246,0.2)" }
+      case "shipped": return { background: "rgba(139,92,246,0.1)", color: "#a78bfa", border: "1px solid rgba(139,92,246,0.2)" }
+      case "delivered": return { background: "rgba(52,211,153,0.1)", color: "#34d399", border: "1px solid rgba(52,211,153,0.2)" }
+      case "cancelled": return { background: "rgba(239,68,68,0.1)", color: "#f87171", border: "1px solid rgba(239,68,68,0.2)" }
+      default: return { background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.4)", border: "1px solid rgba(255,255,255,0.1)" }
     }
   }
 
@@ -60,141 +65,175 @@ export default function Commandes() {
   }
 
   return (
-    <div>
+    <div style={{ color: "#fff", fontFamily: "'Inter', sans-serif" }}>
+
       <NouvelleCommandeModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSuccess={fetchCommandes}
       />
-
       <PaiementModal
         isOpen={isPaiementOpen}
         onClose={() => setIsPaiementOpen(false)}
         montant={montantPaiement}
       />
 
-      <div className="flex justify-between items-center mb-8">
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Commandes</h1>
-          <p className="text-sm text-gray-500 mt-1">Gérez toutes vos commandes</p>
+          <h1 style={{ fontSize: "1.5rem", fontWeight: "700", margin: 0 }}>Commandes</h1>
+          <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.4)", margin: "4px 0 0" }}>
+            Gérez toutes vos commandes
+          </p>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="bg-violet-500 hover:bg-violet-600 text-white text-sm rounded-lg px-4 py-2 transition-colors"
+          style={{
+            padding: "10px 20px", borderRadius: "10px", border: "none",
+            background: "linear-gradient(135deg, #8b5cf6, #6d28d9)",
+            color: "#fff", fontSize: "14px", fontWeight: "600",
+            cursor: "pointer", boxShadow: "0 0 20px rgba(139,92,246,0.3)"
+          }}
         >
           + Nouvelle commande
         </button>
       </div>
 
-      <div className="grid grid-cols-4 gap-4 mb-8">
-        <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <p className="text-xs text-gray-500 mb-1">Total commandes</p>
-          <p className="text-2xl font-semibold text-gray-900">{commandes.length}</p>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <p className="text-xs text-gray-500 mb-1">En attente</p>
-          <p className="text-2xl font-semibold text-orange-400">
-            {commandes.filter(c => c.status === "pending").length}
-          </p>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <p className="text-xs text-gray-500 mb-1">Livrées</p>
-          <p className="text-2xl font-semibold text-green-500">
-            {commandes.filter(c => c.status === "delivered").length}
-          </p>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <p className="text-xs text-gray-500 mb-1">Chiffre d'affaires</p>
-          <p className="text-2xl font-semibold text-violet-500">
-            {commandes.reduce((sum, c) => sum + c.total, 0).toLocaleString()} FCFA
-          </p>
-        </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem", marginBottom: "1.5rem" }}>
+        {[
+          { label: "Total commandes", value: commandes.length, color: "#fff", icon: "🛒" },
+          { label: "En attente", value: commandes.filter(c => c.status === "pending").length, color: "#fbbf24", icon: "⏳" },
+          { label: "Livrées", value: commandes.filter(c => c.status === "delivered").length, color: "#34d399", icon: "✅" },
+          { label: "Chiffre d'affaires", value: `${commandes.reduce((sum, c) => sum + c.total, 0).toLocaleString()} FCFA`, color: "#a78bfa", icon: "💰" },
+        ].map((kpi, i) => (
+          <div key={i} style={{ ...cardStyle, transition: "all 0.2s" }}
+            onMouseEnter={e => {
+              e.currentTarget.style.borderColor = "rgba(139,92,246,0.3)"
+              e.currentTarget.style.background = "rgba(139,92,246,0.06)"
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)"
+              e.currentTarget.style.background = "rgba(255,255,255,0.03)"
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", margin: "0 0 8px" }}>{kpi.label}</p>
+              <span style={{ fontSize: "18px" }}>{kpi.icon}</span>
+            </div>
+            <p style={{ fontSize: "1.8rem", fontWeight: "700", color: kpi.color, margin: 0 }}>{kpi.value}</p>
+          </div>
+        ))}
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-100">
-        <div className="flex items-center justify-between p-4 border-b border-gray-100">
+      <div style={{ ...cardStyle, padding: 0, overflow: "hidden" }}>
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "1rem 1.25rem", borderBottom: "1px solid rgba(255,255,255,0.06)"
+        }}>
           <input
             type="text"
             placeholder="🔍 Rechercher une commande..."
-            className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-violet-400 w-64"
+            style={{
+              background: "rgba(255,255,255,0.05)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: "10px", padding: "8px 14px",
+              color: "#fff", fontSize: "13px", outline: "none", width: "240px"
+            }}
           />
-          <select className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none text-gray-600">
-            <option>Tous les statuts</option>
-            <option>En attente</option>
-            <option>Confirmé</option>
-            <option>Expédié</option>
-            <option>Livré</option>
-            <option>Annulé</option>
+          <select style={{
+            background: "rgba(255,255,255,0.05)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            borderRadius: "10px", padding: "8px 14px",
+            color: "rgba(255,255,255,0.6)", fontSize: "13px", outline: "none"
+          }}>
+            {["Tous les statuts", "En attente", "Confirmé", "Expédié", "Livré", "Annulé"].map(s => (
+              <option key={s} style={{ background: "#1a1a2e" }}>{s}</option>
+            ))}
           </select>
         </div>
 
-        <table className="w-full">
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
-            <tr className="border-b border-gray-100">
-              <th className="text-left text-xs text-gray-500 font-medium p-4">Client</th>
-              <th className="text-left text-xs text-gray-500 font-medium p-4">Produits</th>
-              <th className="text-left text-xs text-gray-500 font-medium p-4">Total</th>
-              <th className="text-left text-xs text-gray-500 font-medium p-4">Statut</th>
-              <th className="text-left text-xs text-gray-500 font-medium p-4">Date</th>
-              <th className="text-left text-xs text-gray-500 font-medium p-4">Actions</th>
+            <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+              {["Client", "Produits", "Total", "Statut", "Date", "Actions"].map(h => (
+                <th key={h} style={{
+                  textAlign: "left", fontSize: "11px",
+                  color: "rgba(255,255,255,0.3)", fontWeight: "500",
+                  padding: "10px 16px", textTransform: "uppercase", letterSpacing: "0.05em"
+                }}>{h}</th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={6} className="text-center py-16">
-                  <p className="text-gray-400 text-sm">Chargement...</p>
+                <td colSpan={6} style={{ textAlign: "center", padding: "4rem", color: "rgba(255,255,255,0.3)" }}>
+                  Chargement...
                 </td>
               </tr>
             ) : commandes.length === 0 ? (
               <tr>
-                <td colSpan={6} className="text-center py-16">
-                  <p className="text-gray-400 text-sm">Aucune commande pour l'instant</p>
-                  <p className="text-gray-300 text-xs mt-1">Cliquez sur "Nouvelle commande" pour commencer</p>
+                <td colSpan={6} style={{ textAlign: "center", padding: "4rem" }}>
+                  <p style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>📭</p>
+                  <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.3)" }}>Aucune commande pour l'instant</p>
                 </td>
               </tr>
             ) : (
               commandes.map((commande) => (
-                <tr key={commande.id} className="border-b border-gray-50 hover:bg-gray-50">
-                  <td className="p-4">
-                    <p className="text-sm font-medium text-gray-900">{commande.customer?.name}</p>
-                    <p className="text-xs text-gray-400">{commande.customer?.phone}</p>
+                <tr key={commande.id}
+                  style={{ borderBottom: "1px solid rgba(255,255,255,0.04)", transition: "background 0.15s" }}
+                  onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.02)")}
+                  onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                >
+                  <td style={{ padding: "12px 16px" }}>
+                    <p style={{ fontSize: "14px", fontWeight: "500", margin: "0 0 2px" }}>{commande.customer?.name}</p>
+                    <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.3)", margin: 0 }}>{commande.customer?.phone}</p>
                   </td>
-                  <td className="p-4">
-                    <p className="text-sm text-gray-600">{commande.items?.length} article(s)</p>
+                  <td style={{ padding: "12px 16px" }}>
+                    <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.6)", margin: 0 }}>{commande.items?.length} article(s)</p>
                   </td>
-                  <td className="p-4">
-                    <p className="text-sm font-medium text-gray-900">{commande.total.toLocaleString()} FCFA</p>
+                  <td style={{ padding: "12px 16px" }}>
+                    <p style={{ fontSize: "14px", fontWeight: "600", color: "#a78bfa", margin: 0 }}>
+                      {commande.total?.toLocaleString()} FCFA
+                    </p>
                   </td>
-                  <td className="p-4">
-                    <span className={`text-xs rounded-full px-2 py-1 ${getStatusColor(commande.status)}`}>
+                  <td style={{ padding: "12px 16px" }}>
+                    <span style={{ fontSize: "12px", padding: "3px 10px", borderRadius: "100px", ...getStatusStyle(commande.status) }}>
                       {getStatusLabel(commande.status)}
                     </span>
                   </td>
-                  <td className="p-4">
-                    <p className="text-xs text-gray-400">
+                  <td style={{ padding: "12px 16px" }}>
+                    <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.3)", margin: 0 }}>
                       {new Date(commande.createdAt).toLocaleDateString("fr-FR")}
                     </p>
                   </td>
-                  <td className="p-4">
-                    <div className="flex gap-2">
+                  <td style={{ padding: "12px 16px" }}>
+                    <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
                       <select
                         value={commande.status}
                         onChange={(e) => handleUpdateStatus(commande.id, e.target.value)}
-                        className="border border-gray-200 rounded-lg px-2 py-1 text-xs outline-none text-gray-600"
+                        style={{
+                          background: "rgba(255,255,255,0.05)",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                          borderRadius: "8px", padding: "4px 8px",
+                          color: "rgba(255,255,255,0.6)", fontSize: "12px", outline: "none"
+                        }}
                       >
-                        <option value="pending">En attente</option>
-                        <option value="confirmed">Confirmé</option>
-                        <option value="shipped">Expédié</option>
-                        <option value="delivered">Livré</option>
-                        <option value="cancelled">Annulé</option>
+                        <option style={{ background: "#1a1a2e" }} value="pending">En attente</option>
+                        <option style={{ background: "#1a1a2e" }} value="confirmed">Confirmé</option>
+                        <option style={{ background: "#1a1a2e" }} value="shipped">Expédié</option>
+                        <option style={{ background: "#1a1a2e" }} value="delivered">Livré</option>
+                        <option style={{ background: "#1a1a2e" }} value="cancelled">Annulé</option>
                       </select>
                       <button
                         onClick={() => {
                           setMontantPaiement(commande.total)
                           setIsPaiementOpen(true)
                         }}
-                        className="text-xs bg-violet-50 text-violet-600 hover:bg-violet-100 rounded-lg px-2 py-1 transition-colors"
+                        style={{
+                          fontSize: "12px", padding: "4px 10px", borderRadius: "8px", border: "none",
+                          background: "rgba(139,92,246,0.15)", color: "#a78bfa", cursor: "pointer",
+                          border: "1px solid rgba(139,92,246,0.2)" as any
+                        }}
                       >
                         💳 Payer
                       </button>

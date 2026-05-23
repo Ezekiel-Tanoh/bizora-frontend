@@ -96,7 +96,7 @@ export default function NouvelleFactureModal({ isOpen, onClose, onSuccess }: Pro
         <div class="header">
           <div>
             <div class="logo">Bizora</div>
-            <p style="color: #6b7280; font-size: 14px;">Le commerce intelligent</p>
+            <p style="color: #6b7280; font-size: 14px;">Vendre devient plus facile </p>
           </div>
           <div style="text-align: right;">
             <div class="badge">Facture</div>
@@ -162,7 +162,7 @@ export default function NouvelleFactureModal({ isOpen, onClose, onSuccess }: Pro
 
         <div class="footer">
           <p>Merci pour votre confiance ! 💜</p>
-          <p>Facture générée par Bizora — Le commerce intelligent</p>
+          <p>Facture générée par Bizora — Vendez plus intelligent</p>
         </div>
       </body>
       </html>

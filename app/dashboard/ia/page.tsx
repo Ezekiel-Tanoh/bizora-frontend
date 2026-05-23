@@ -1,114 +1,198 @@
+"use client"
+
+import { useState } from "react"
+import api from "@/lib/api"
+
+const cardStyle = {
+  background: "rgba(255,255,255,0.03)",
+  border: "1px solid rgba(255,255,255,0.07)",
+  borderRadius: "16px",
+  padding: "1.25rem",
+}
+
 export default function IAAssistant() {
+  const [messages, setMessages] = useState<{ role: string, content: string }[]>([
+    { role: "ia", content: "Bonjour ! Je suis votre assistant IA Bizora. Je peux vous aider à analyser vos ventes, générer des descriptions produits, créer du contenu marketing et bien plus encore. Comment puis-je vous aider ?" }
+  ])
+  const [input, setInput] = useState("")
+  const [loading, setLoading] = useState(false)
+
+  const handleSend = async () => {
+    if (!input.trim()) return
+    const userMsg = input
+    setInput("")
+    setMessages(prev => [...prev, { role: "user", content: userMsg }])
+    setLoading(true)
+    try {
+      const response = await api.post("/ai/chat", { message: userMsg })
+      setMessages(prev => [...prev, { role: "ia", content: response.data.response }])
+    } catch {
+      setMessages(prev => [...prev, { role: "ia", content: "Erreur lors de la connexion à l'IA. Réessayez." }])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const suggestions = [
+    "Quel produit se vend le plus ?",
+    "Que dois-je restockers ?",
+    "Génère une promotion",
+    "Analyse mes clients",
+  ]
+
+  const outils = [
+    { icon: "📝", title: "Description produit", desc: "Génère une description professionnelle" },
+    { icon: "📊", title: "Analyse des ventes", desc: "Insights intelligents sur vos performances" },
+    { icon: "📱", title: "Post marketing", desc: "Posts Facebook et WhatsApp automatiques" },
+    { icon: "📦", title: "Recommandations stock", desc: "Savoir quoi restockers et quand" },
+    { icon: "👥", title: "Analyse clients", desc: "Découvrez vos meilleurs clients" },
+    { icon: "💰", title: "Prédictions ventes", desc: "Anticipez vos revenus futurs" },
+  ]
+
   return (
-    <div>
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-900">🤖 IA Assistant</h1>
-          <p className="text-sm text-gray-500 mt-1">Votre assistant business intelligent</p>
-        </div>
-        <div className="bg-violet-50 rounded-lg px-4 py-2">
-          <p className="text-xs text-violet-600 font-medium">Plan Pro requis pour l'IA complète</p>
-        </div>
+    <div style={{ color: "#fff", fontFamily: "'Inter', sans-serif" }}>
+
+      <div style={{ marginBottom: "2rem" }}>
+        <h1 style={{ fontSize: "1.5rem", fontWeight: "700", margin: 0 }}>🤖 IA Assistant</h1>
+        <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.4)", margin: "4px 0 0" }}>
+          Votre assistant business intelligent
+        </p>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        <div className="bg-white rounded-xl border border-gray-100 p-5 cursor-pointer hover:border-violet-200 transition-colors">
-          <div className="w-10 h-10 bg-violet-50 rounded-lg flex items-center justify-center mb-3">
-            <span className="text-xl">📝</span>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem", marginBottom: "1.5rem" }}>
+        {outils.map((outil, i) => (
+          <div key={i} style={{ ...cardStyle, cursor: "pointer", transition: "all 0.2s" }}
+            onMouseEnter={e => {
+              e.currentTarget.style.borderColor = "rgba(139,92,246,0.3)"
+              e.currentTarget.style.background = "rgba(139,92,246,0.06)"
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)"
+              e.currentTarget.style.background = "rgba(255,255,255,0.03)"
+            }}
+          >
+            <div style={{
+              width: "36px", height: "36px", borderRadius: "10px",
+              background: "rgba(139,92,246,0.15)", border: "1px solid rgba(139,92,246,0.2)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: "18px", marginBottom: "10px"
+            }}>{outil.icon}</div>
+            <p style={{ fontSize: "13px", fontWeight: "600", margin: "0 0 4px" }}>{outil.title}</p>
+            <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", margin: 0 }}>{outil.desc}</p>
           </div>
-          <h3 className="text-sm font-semibold text-gray-900 mb-1">Générer description produit</h3>
-          <p className="text-xs text-gray-500">L'IA génère une description professionnelle pour vos produits</p>
-        </div>
-
-        <div className="bg-white rounded-xl border border-gray-100 p-5 cursor-pointer hover:border-violet-200 transition-colors">
-          <div className="w-10 h-10 bg-violet-50 rounded-lg flex items-center justify-center mb-3">
-            <span className="text-xl">📊</span>
-          </div>
-          <h3 className="text-sm font-semibold text-gray-900 mb-1">Analyser mes ventes</h3>
-          <p className="text-xs text-gray-500">Obtenez des insights intelligents sur vos performances</p>
-        </div>
-
-        <div className="bg-white rounded-xl border border-gray-100 p-5 cursor-pointer hover:border-violet-200 transition-colors">
-          <div className="w-10 h-10 bg-violet-50 rounded-lg flex items-center justify-center mb-3">
-            <span className="text-xl">📱</span>
-          </div>
-          <h3 className="text-sm font-semibold text-gray-900 mb-1">Créer post marketing</h3>
-          <p className="text-xs text-gray-500">Générez des posts Facebook et WhatsApp automatiquement</p>
-        </div>
-
-        <div className="bg-white rounded-xl border border-gray-100 p-5 cursor-pointer hover:border-violet-200 transition-colors">
-          <div className="w-10 h-10 bg-violet-50 rounded-lg flex items-center justify-center mb-3">
-            <span className="text-xl">📦</span>
-          </div>
-          <h3 className="text-sm font-semibold text-gray-900 mb-1">Recommandations stock</h3>
-          <p className="text-xs text-gray-500">L'IA vous dit quoi restockers et quand</p>
-        </div>
-
-        <div className="bg-white rounded-xl border border-gray-100 p-5 cursor-pointer hover:border-violet-200 transition-colors">
-          <div className="w-10 h-10 bg-violet-50 rounded-lg flex items-center justify-center mb-3">
-            <span className="text-xl">👥</span>
-          </div>
-          <h3 className="text-sm font-semibold text-gray-900 mb-1">Analyser mes clients</h3>
-          <p className="text-xs text-gray-500">Découvrez vos meilleurs clients et leurs habitudes</p>
-        </div>
-
-        <div className="bg-white rounded-xl border border-gray-100 p-5 cursor-pointer hover:border-violet-200 transition-colors">
-          <div className="w-10 h-10 bg-violet-50 rounded-lg flex items-center justify-center mb-3">
-            <span className="text-xl">💰</span>
-          </div>
-          <h3 className="text-sm font-semibold text-gray-900 mb-1">Prédictions ventes</h3>
-          <p className="text-xs text-gray-500">Anticipez vos revenus des prochains mois</p>
-        </div>
+        ))}
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-100 p-6">
-        <h2 className="text-sm font-semibold text-gray-900 mb-4">💬 Chat avec l'IA</h2>
+      <div style={cardStyle}>
+        <h2 style={{ fontSize: "14px", fontWeight: "600", margin: "0 0 1rem" }}>💬 Chat avec l'IA</h2>
 
-        <div className="bg-gray-50 rounded-xl p-4 h-72 mb-4 overflow-y-auto flex flex-col gap-3">
-
-          <div className="flex gap-3">
-            <div className="w-8 h-8 rounded-lg bg-violet-500 flex items-center justify-center flex-shrink-0">
-              <span className="text-white text-xs font-bold">IA</span>
+        <div style={{
+          background: "rgba(0,0,0,0.2)", borderRadius: "12px",
+          padding: "1rem", height: "320px", overflowY: "auto",
+          display: "flex", flexDirection: "column", gap: "12px",
+          marginBottom: "1rem"
+        }}>
+          {messages.map((msg, i) => (
+            <div key={i} style={{
+              display: "flex", gap: "10px",
+              justifyContent: msg.role === "user" ? "flex-end" : "flex-start"
+            }}>
+              {msg.role === "ia" && (
+                <div style={{
+                  width: "28px", height: "28px", borderRadius: "8px",
+                  background: "linear-gradient(135deg, #8b5cf6, #6d28d9)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: "12px", fontWeight: "bold", flexShrink: 0
+                }}>IA</div>
+              )}
+              <div style={{
+                maxWidth: "75%", padding: "10px 14px", borderRadius: "12px",
+                fontSize: "13px", lineHeight: "1.6",
+                background: msg.role === "user"
+                  ? "rgba(139,92,246,0.2)"
+                  : "rgba(255,255,255,0.05)",
+                border: msg.role === "user"
+                  ? "1px solid rgba(139,92,246,0.3)"
+                  : "1px solid rgba(255,255,255,0.07)",
+                color: msg.role === "user" ? "#c4b5fd" : "rgba(255,255,255,0.8)"
+              }}>
+                {msg.content}
+              </div>
             </div>
-            <div className="bg-white rounded-xl rounded-tl-none border border-gray-100 p-3 max-w-md">
-              <p className="text-sm text-gray-700">
-                Bonjour ! Je suis votre assistant IA Bizora. Je peux vous aider à :
-              </p>
-              <ul className="text-sm text-gray-600 mt-2 space-y-1">
-                <li>• Analyser vos ventes et performances</li>
-                <li>• Générer des descriptions de produits</li>
-                <li>• Créer du contenu marketing</li>
-                <li>• Recommander des actions business</li>
-              </ul>
-              <p className="text-sm text-gray-700 mt-2">Comment puis-je vous aider aujourd'hui ?</p>
+          ))}
+          {loading && (
+            <div style={{ display: "flex", gap: "10px" }}>
+              <div style={{
+                width: "28px", height: "28px", borderRadius: "8px",
+                background: "linear-gradient(135deg, #8b5cf6, #6d28d9)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: "12px", fontWeight: "bold"
+              }}>IA</div>
+              <div style={{
+                padding: "10px 14px", borderRadius: "12px",
+                background: "rgba(255,255,255,0.05)",
+                border: "1px solid rgba(255,255,255,0.07)",
+                color: "rgba(255,255,255,0.4)", fontSize: "13px"
+              }}>
+                En train de réfléchir...
+              </div>
             </div>
-          </div>
-
+          )}
         </div>
 
-        <div className="flex gap-2">
+        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "1rem" }}>
+          {suggestions.map((s, i) => (
+            <button key={i}
+              onClick={() => setInput(s)}
+              style={{
+                fontSize: "12px", padding: "5px 12px", borderRadius: "100px", border: "none",
+                background: "rgba(255,255,255,0.05)",
+                border: "1px solid rgba(255,255,255,0.1)" as any,
+                color: "rgba(255,255,255,0.5)", cursor: "pointer", transition: "all 0.15s"
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = "rgba(139,92,246,0.1)"
+                e.currentTarget.style.color = "#a78bfa"
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = "rgba(255,255,255,0.05)"
+                e.currentTarget.style.color = "rgba(255,255,255,0.5)"
+              }}
+            >{s}</button>
+          ))}
+        </div>
+
+        <div style={{ display: "flex", gap: "8px" }}>
           <input
             type="text"
-            placeholder="Ex: Quel produit se vend le plus ? Génère une promotion..."
-            className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-violet-400"
+            placeholder="Posez une question à l'IA..."
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && handleSend()}
+            style={{
+              flex: 1, padding: "10px 14px", borderRadius: "10px",
+              background: "rgba(255,255,255,0.05)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              color: "#fff", fontSize: "13px", outline: "none"
+            }}
+            onFocus={e => (e.currentTarget.style.borderColor = "rgba(139,92,246,0.6)")}
+            onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
           />
-          <button className="bg-violet-500 hover:bg-violet-600 text-white rounded-lg px-6 py-2 text-sm transition-colors">
-            Envoyer
-          </button>
-        </div>
-
-        <div className="flex gap-2 mt-3">
-          <button className="text-xs bg-gray-50 hover:bg-gray-100 text-gray-600 rounded-lg px-3 py-1.5 transition-colors">
-            Quel produit se vend le plus ?
-          </button>
-          <button className="text-xs bg-gray-50 hover:bg-gray-100 text-gray-600 rounded-lg px-3 py-1.5 transition-colors">
-            Que dois-je restockers ?
-          </button>
-          <button className="text-xs bg-gray-50 hover:bg-gray-100 text-gray-600 rounded-lg px-3 py-1.5 transition-colors">
-            Génère une promotion
+          <button
+            onClick={handleSend}
+            disabled={loading}
+            style={{
+              padding: "10px 20px", borderRadius: "10px", border: "none",
+              background: loading ? "rgba(139,92,246,0.4)" : "linear-gradient(135deg, #8b5cf6, #6d28d9)",
+              color: "#fff", fontSize: "14px", fontWeight: "600",
+              cursor: loading ? "not-allowed" : "pointer",
+              boxShadow: "0 0 12px rgba(139,92,246,0.3)"
+            }}
+          >
+            {loading ? "..." : "→"}
           </button>
         </div>
       </div>
     </div>
-  );
+  )
 }
