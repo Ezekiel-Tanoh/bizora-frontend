@@ -89,12 +89,12 @@ export default function LandingPage() {
           fontSize: "clamp(2.5rem, 6vw, 4.5rem)", fontWeight: "700", lineHeight: "1.1",
           marginBottom: "1.5rem", maxWidth: "800px"
         }}>
-          Gérez votre business{" "}
+          Vendez plus intelligent {" "}
           <span style={{
             background: "linear-gradient(135deg, #8b5cf6, #a78bfa, #c4b5fd)",
             WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent"
           }}>
-            avec intelligence
+            avec Bizora
           </span>
         </h1>
 
