@@ -45,7 +45,7 @@ export default function NouveauProduitModal({ isOpen, onClose, onSuccess }: Prop
     try {
       const user = JSON.parse(localStorage.getItem("bizora_user") || "{}")
       await api.post("/products", {
-        storeId: user.id,
+        storeId: user.storeId,
         name,
         description,
         price: parseFloat(price),
