@@ -1,12 +1,28 @@
+"use client"
+
+import { useState } from "react"
+import NouvelleFactureModal from "@/components/NouvelleFactureModal"
+
 export default function Factures() {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
   return (
     <div>
+      <NouvelleFactureModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSuccess={() => {}}
+      />
+
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">Factures</h1>
           <p className="text-sm text-gray-500 mt-1">Gérez vos factures et devis</p>
         </div>
-        <button className="bg-violet-500 hover:bg-violet-600 text-white text-sm rounded-lg px-4 py-2 transition-colors">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="bg-violet-500 hover:bg-violet-600 text-white text-sm rounded-lg px-4 py-2 transition-colors"
+        >
           + Nouvelle facture
         </button>
       </div>
@@ -30,48 +46,17 @@ export default function Factures() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-100">
-
-        <div className="flex items-center justify-between p-4 border-b border-gray-100">
-          <input
-            type="text"
-            placeholder="🔍 Rechercher une facture..."
-            className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-violet-400 w-64"
-          />
-          <div className="flex gap-2">
-            <select className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none text-gray-600">
-              <option>Tous les statuts</option>
-              <option>Payée</option>
-              <option>En attente</option>
-              <option>Annulée</option>
-            </select>
-            <button className="border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors">
-              📥 Exporter
-            </button>
-          </div>
-        </div>
-
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-gray-100">
-              <th className="text-left text-xs text-gray-500 font-medium p-4">N° Facture</th>
-              <th className="text-left text-xs text-gray-500 font-medium p-4">Client</th>
-              <th className="text-left text-xs text-gray-500 font-medium p-4">Date</th>
-              <th className="text-left text-xs text-gray-500 font-medium p-4">Montant</th>
-              <th className="text-left text-xs text-gray-500 font-medium p-4">Statut</th>
-              <th className="text-left text-xs text-gray-500 font-medium p-4">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td colSpan={6} className="text-center py-16">
-                <p className="text-gray-400 text-sm">Aucune facture pour l'instant</p>
-                <p className="text-gray-300 text-xs mt-1">Vos factures apparaîtront ici</p>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div className="bg-white rounded-xl border border-gray-100 p-8 text-center">
+        <p className="text-4xl mb-4">🧾</p>
+        <p className="text-gray-400 text-sm">Créez votre première facture</p>
+        <p className="text-gray-300 text-xs mt-1 mb-4">Les factures sont générées en PDF automatiquement</p>
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="bg-violet-500 hover:bg-violet-600 text-white text-sm rounded-lg px-6 py-2 transition-colors"
+        >
+          + Nouvelle facture
+        </button>
       </div>
     </div>
-  );
+  )
 }
