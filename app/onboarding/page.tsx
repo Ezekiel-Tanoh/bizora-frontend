@@ -1,8 +1,26 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import api from "@/lib/api"
+
+const PAYS = [
+  { code: "XOF-CI", pays: "Côte d'Ivoire", devise: "Franc CFA (XOF)", flag: "https://flagcdn.com/w40/ci.png" },
+  { code: "XOF-BJ", pays: "Bénin", devise: "Franc CFA (XOF)", flag: "https://flagcdn.com/w40/bj.png" },
+  { code: "XOF-BF", pays: "Burkina Faso", devise: "Franc CFA (XOF)", flag: "https://flagcdn.com/w40/bf.png" },
+  { code: "XOF-GW", pays: "Guinée-Bissau", devise: "Franc CFA (XOF)", flag: "https://flagcdn.com/w40/gw.png" },
+  { code: "XOF-ML", pays: "Mali", devise: "Franc CFA (XOF)", flag: "https://flagcdn.com/w40/ml.png" },
+  { code: "XOF-NE", pays: "Niger", devise: "Franc CFA (XOF)", flag: "https://flagcdn.com/w40/ne.png" },
+  { code: "XOF-SN", pays: "Sénégal", devise: "Franc CFA (XOF)", flag: "https://flagcdn.com/w40/sn.png" },
+  { code: "XOF-TG", pays: "Togo", devise: "Franc CFA (XOF)", flag: "https://flagcdn.com/w40/tg.png" },
+  { code: "CVE", pays: "Cap-Vert", devise: "Escudo cap-verdien (CVE)", flag: "https://flagcdn.com/w40/cv.png" },
+  { code: "GMD", pays: "Gambie", devise: "Dalasi (GMD)", flag: "https://flagcdn.com/w40/gm.png" },
+  { code: "GHS", pays: "Ghana", devise: "Cedi ghanéen (GHS)", flag: "https://flagcdn.com/w40/gh.png" },
+  { code: "GNF", pays: "Guinée", devise: "Franc guinéen (GNF)", flag: "https://flagcdn.com/w40/gn.png" },
+  { code: "LRD", pays: "Liberia", devise: "Dollar libérien (LRD)", flag: "https://flagcdn.com/w40/lr.png" },
+  { code: "NGN", pays: "Nigeria", devise: "Naira (NGN)", flag: "https://flagcdn.com/w40/ng.png" },
+  { code: "SLE", pays: "Sierra Leone", devise: "Leone (SLE)", flag: "https://flagcdn.com/w40/sl.png" },
+]
 
 export default function Onboarding() {
   const router = useRouter()
@@ -10,9 +28,27 @@ export default function Onboarding() {
   const [description, setDescription] = useState("")
   const [telephone, setTelephone] = useState("")
   const [ville, setVille] = useState("")
-  const [devise, setDevise] = useState("XOF")
+  const [devise, setDevise] = useState(PAYS[0])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [search, setSearch] = useState("")
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  const filtered = PAYS.filter(p =>
+    p.pays.toLowerCase().includes(search.toLowerCase()) ||
+    p.devise.toLowerCase().includes(search.toLowerCase())
+  )
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClick)
+    return () => document.removeEventListener("mousedown", handleClick)
+  }, [])
 
   const handleSubmit = async () => {
     if (!nomBoutique.trim()) {
@@ -28,7 +64,7 @@ export default function Onboarding() {
         description,
         telephone,
         ville,
-        devise
+        devise: devise.code
       }, {
         headers: { Authorization: `Bearer ${token}` }
       })
@@ -47,8 +83,6 @@ export default function Onboarding() {
     color: "#fff", fontSize: "14px", outline: "none",
     boxSizing: "border-box" as const, transition: "border 0.2s"
   }
-
-  const optionStyle = { background: "#1a1a2e" }
 
   return (
     <main style={{
@@ -192,34 +226,113 @@ export default function Onboarding() {
           </div>
         </div>
 
-        {/* Devise */}
-        <div style={{ marginBottom: "2rem" }}>
+        {/* Sélecteur pays custom */}
+        <div style={{ marginBottom: "2rem", position: "relative" }} ref={dropdownRef}>
           <label style={{ fontSize: "13px", color: "rgba(255,255,255,0.5)", display: "block", marginBottom: "6px" }}>
             Pays & Devise
           </label>
-          <select
-            value={devise}
-            onChange={(e) => setDevise(e.target.value)}
-            style={{ ...inputStyle, cursor: "pointer" }}
-            onFocus={e => (e.currentTarget.style.borderColor = "rgba(139,92,246,0.6)")}
-            onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
+
+          {/* Bouton trigger */}
+          <div
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            style={{
+              ...inputStyle,
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+              cursor: "pointer",
+              borderColor: dropdownOpen ? "rgba(139,92,246,0.6)" : "rgba(255,255,255,0.1)"
+            }}
           >
-            <option style={optionStyle} value="XOF-CI">🇨🇮 Côte d'Ivoire — Franc CFA (XOF)</option>
-            <option style={optionStyle} value="XOF-BJ">🇧🇯 Bénin — Franc CFA (XOF)</option>
-            <option style={optionStyle} value="XOF-BF">🇧🇫 Burkina Faso — Franc CFA (XOF)</option>
-            <option style={optionStyle} value="XOF-GW">🇬🇼 Guinée-Bissau — Franc CFA (XOF)</option>
-            <option style={optionStyle} value="XOF-ML">🇲🇱 Mali — Franc CFA (XOF)</option>
-            <option style={optionStyle} value="XOF-NE">🇳🇪 Niger — Franc CFA (XOF)</option>
-            <option style={optionStyle} value="XOF-SN">🇸🇳 Sénégal — Franc CFA (XOF)</option>
-            <option style={optionStyle} value="XOF-TG">🇹🇬 Togo — Franc CFA (XOF)</option>
-            <option style={optionStyle} value="CVE">🇨🇻 Cap-Vert — Escudo cap-verdien (CVE)</option>
-            <option style={optionStyle} value="GMD">🇬🇲 Gambie — Dalasi (GMD)</option>
-            <option style={optionStyle} value="GHS">🇬🇭 Ghana — Cedi ghanéen (GHS)</option>
-            <option style={optionStyle} value="GNF">🇬🇳 Guinée — Franc guinéen (GNF)</option>
-            <option style={optionStyle} value="LRD">🇱🇷 Liberia — Dollar libérien (LRD)</option>
-            <option style={optionStyle} value="NGN">🇳🇬 Nigeria — Naira (NGN)</option>
-            <option style={optionStyle} value="SLE">🇸🇱 Sierra Leone — Leone (SLE)</option>
-          </select>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <img
+                src={devise.flag}
+                alt={devise.pays}
+                style={{ width: "24px", height: "16px", borderRadius: "3px", objectFit: "cover" }}
+              />
+              <span style={{ fontSize: "14px" }}>{devise.pays}</span>
+              <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.35)" }}>{devise.devise}</span>
+            </div>
+            <span style={{
+              color: "rgba(255,255,255,0.4)", fontSize: "12px",
+              transform: dropdownOpen ? "rotate(180deg)" : "rotate(0deg)",
+              transition: "transform 0.2s"
+            }}>▼</span>
+          </div>
+
+          {/* Dropdown */}
+          {dropdownOpen && (
+            <div style={{
+              position: "absolute", top: "calc(100% + 6px)", left: 0, right: 0, zIndex: 50,
+              background: "#13131f",
+              border: "1px solid rgba(139,92,246,0.3)",
+              borderRadius: "12px",
+              overflow: "hidden",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.5)"
+            }}>
+              {/* Search */}
+              <div style={{ padding: "10px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                <input
+                  type="text"
+                  placeholder="🔍 Rechercher un pays..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  autoFocus
+                  style={{
+                    ...inputStyle,
+                    padding: "8px 12px",
+                    fontSize: "13px",
+                    background: "rgba(255,255,255,0.05)"
+                  }}
+                />
+              </div>
+
+              {/* Liste */}
+              <div style={{ maxHeight: "220px", overflowY: "auto" }}>
+                {filtered.length === 0 ? (
+                  <div style={{ padding: "16px", textAlign: "center", color: "rgba(255,255,255,0.3)", fontSize: "13px" }}>
+                    Aucun pays trouvé
+                  </div>
+                ) : (
+                  filtered.map((p) => (
+                    <div
+                      key={p.code}
+                      onClick={() => {
+                        setDevise(p)
+                        setDropdownOpen(false)
+                        setSearch("")
+                      }}
+                      style={{
+                        display: "flex", alignItems: "center", gap: "12px",
+                        padding: "10px 14px", cursor: "pointer",
+                        background: devise.code === p.code ? "rgba(139,92,246,0.15)" : "transparent",
+                        transition: "background 0.15s"
+                      }}
+                      onMouseEnter={e => {
+                        if (devise.code !== p.code)
+                          e.currentTarget.style.background = "rgba(255,255,255,0.05)"
+                      }}
+                      onMouseLeave={e => {
+                        if (devise.code !== p.code)
+                          e.currentTarget.style.background = "transparent"
+                      }}
+                    >
+                      <img
+                        src={p.flag}
+                        alt={p.pays}
+                        style={{ width: "28px", height: "18px", borderRadius: "3px", objectFit: "cover", flexShrink: 0 }}
+                      />
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: "14px", fontWeight: "500" }}>{p.pays}</div>
+                        <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.35)" }}>{p.devise}</div>
+                      </div>
+                      {devise.code === p.code && (
+                        <span style={{ color: "#a78bfa", fontSize: "14px" }}>✓</span>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Bouton */}

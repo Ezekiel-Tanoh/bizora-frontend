@@ -1,65 +1,159 @@
 "use client"
 
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+const navItems = [
+  { href: "/dashboard", icon: "📊", label: "Dashboard" },
+  { href: "/dashboard/produits", icon: "📦", label: "Produits" },
+  { href: "/dashboard/commandes", icon: "🛒", label: "Commandes" },
+  { href: "/dashboard/clients", icon: "👥", label: "Clients" },
+  { href: "/dashboard/stock", icon: "🏪", label: "Stock" },
+  { href: "/dashboard/factures", icon: "🧾", label: "Factures" },
+  { href: "/dashboard/ia", icon: "🤖", label: "IA Assistant" },
+  { href: "/dashboard/parametres", icon: "⚙️", label: "Paramètres" },
+]
+
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const router = useRouter()
 
-  const isActive = (path: string) => pathname === path
+  const handleLogout = () => {
+    localStorage.removeItem("bizora_token")
+    localStorage.removeItem("bizora_user")
+    router.push("/login")
+  }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div style={{
+      display: "flex", minHeight: "100vh",
+      background: "#0a0a0f", fontFamily: "'Inter', sans-serif", color: "#fff"
+    }}>
 
-      <aside className="w-64 bg-white border-r border-gray-100 p-6 flex flex-col">
-        <div className="flex items-center gap-2 mb-10">
-          <div className="w-8 h-8 rounded-lg bg-violet-500 flex items-center justify-center">
-            <span className="text-white font-bold">B</span>
-          </div>
-          <span className="text-xl font-semibold text-gray-900">Bizora</span>
+      {/* SIDEBAR */}
+      <aside style={{
+        width: "240px", flexShrink: 0,
+        background: "rgba(255,255,255,0.02)",
+        borderRight: "1px solid rgba(255,255,255,0.06)",
+        display: "flex", flexDirection: "column",
+        padding: "1.5rem 1rem",
+        position: "sticky", top: 0, height: "100vh"
+      }}>
+
+        {/* Logo */}
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "2rem", padding: "0 0.5rem" }}>
+          <div style={{
+            width: "32px", height: "32px", borderRadius: "8px",
+            background: "linear-gradient(135deg, #8b5cf6, #6d28d9)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontWeight: "bold", fontSize: "16px",
+            boxShadow: "0 0 16px rgba(139,92,246,0.4)"
+          }}>B</div>
+          <span style={{ fontSize: "18px", fontWeight: "600" }}>Bizora</span>
         </div>
 
-        <nav className="flex flex-col gap-1">
-          <a href="/dashboard" className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm ${isActive("/dashboard") ? "bg-violet-50 text-violet-600 font-medium" : "text-gray-600 hover:bg-gray-50"}`}>
-            📊 Dashboard
-          </a>
-          <a href="/dashboard/produits" className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm ${isActive("/dashboard/produits") ? "bg-violet-50 text-violet-600 font-medium" : "text-gray-600 hover:bg-gray-50"}`}>
-            📦 Produits
-          </a>
-          <a href="/dashboard/commandes" className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm ${isActive("/dashboard/commandes") ? "bg-violet-50 text-violet-600 font-medium" : "text-gray-600 hover:bg-gray-50"}`}>
-            🛒 Commandes
-          </a>
-          <a href="/dashboard/clients" className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm ${isActive("/dashboard/clients") ? "bg-violet-50 text-violet-600 font-medium" : "text-gray-600 hover:bg-gray-50"}`}>
-            👥 Clients
-          </a>
-          <a href="/dashboard/stock" className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm ${isActive("/dashboard/stock") ? "bg-violet-50 text-violet-600 font-medium" : "text-gray-600 hover:bg-gray-50"}`}>
-            🏪 Stock
-          </a>
-          <a href="/dashboard/factures" className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm ${isActive("/dashboard/factures") ? "bg-violet-50 text-violet-600 font-medium" : "text-gray-600 hover:bg-gray-50"}`}>
-            🧾 Factures
-          </a>
-          <a href="/dashboard/ia" className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm ${isActive("/dashboard/ia") ? "bg-violet-50 text-violet-600 font-medium" : "text-gray-600 hover:bg-gray-50"}`}>
-            🤖 IA Assistant
-          </a>
-          <a href="/dashboard/parametres" className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm ${isActive("/dashboard/parametres") ? "bg-violet-50 text-violet-600 font-medium" : "text-gray-600 hover:bg-gray-50"}`}>
-            ⚙️ Paramètres
-          </a>
+        {/* Nav */}
+        <nav style={{ display: "flex", flexDirection: "column", gap: "4px", flex: 1 }}>
+          {navItems.map((item) => {
+            const active = pathname === item.href
+            return (
+              
+                key={item.href}
+                href={item.href}
+                style={{
+                  display: "flex", alignItems: "center", gap: "10px",
+                  padding: "9px 12px", borderRadius: "10px",
+                  fontSize: "14px", textDecoration: "none",
+                  fontWeight: active ? "500" : "400",
+                  background: active ? "rgba(139,92,246,0.15)" : "transparent",
+                  color: active ? "#a78bfa" : "rgba(255,255,255,0.5)",
+                  borderLeft: active ? "2px solid #8b5cf6" : "2px solid transparent",
+                  transition: "all 0.15s"
+                }}
+                onMouseEnter={e => {
+                  if (!active) {
+                    e.currentTarget.style.background = "rgba(255,255,255,0.04)"
+                    e.currentTarget.style.color = "rgba(255,255,255,0.8)"
+                  }
+                }}
+                onMouseLeave={e => {
+                  if (!active) {
+                    e.currentTarget.style.background = "transparent"
+                    e.currentTarget.style.color = "rgba(255,255,255,0.5)"
+                  }
+                }}
+              >
+                <span style={{ fontSize: "16px" }}>{item.icon}</span>
+                {item.label}
+              </a>
+            )
+          })}
         </nav>
 
-        <div className="mt-auto bg-violet-50 rounded-xl p-4">
-          <p className="text-xs font-medium text-violet-700">Plan Gratuit</p>
-          <p className="text-xs text-violet-500 mt-1">Passez au Pro pour débloquer l'IA</p>
-          <button className="mt-3 w-full bg-violet-500 hover:bg-violet-600 text-white text-xs rounded-lg py-2 transition-colors">
-            Passer au Pro
+        {/* Plan gratuit */}
+        <div style={{
+          background: "rgba(139,92,246,0.08)",
+          border: "1px solid rgba(139,92,246,0.2)",
+          borderRadius: "12px", padding: "1rem", marginBottom: "1rem"
+        }}>
+          <p style={{ fontSize: "12px", fontWeight: "600", color: "#a78bfa", margin: "0 0 4px" }}>
+            ✨ Plan Gratuit
+          </p>
+          <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.35)", margin: "0 0 10px" }}>
+            Passez au Pro pour débloquer l'IA avancée
+          </p>
+          <button style={{
+            width: "100%", padding: "7px", borderRadius: "8px", border: "none",
+            background: "linear-gradient(135deg, #8b5cf6, #6d28d9)",
+            color: "#fff", fontSize: "12px", fontWeight: "600", cursor: "pointer",
+            boxShadow: "0 0 12px rgba(139,92,246,0.3)"
+          }}>
+            Passer au Pro →
           </button>
         </div>
+
+        {/* Déconnexion */}
+        <button
+          onClick={handleLogout}
+          style={{
+            display: "flex", alignItems: "center", gap: "8px",
+            padding: "9px 12px", borderRadius: "10px", border: "none",
+            background: "transparent", color: "rgba(255,255,255,0.3)",
+            fontSize: "13px", cursor: "pointer", width: "100%",
+            transition: "all 0.15s"
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.background = "rgba(239,68,68,0.08)"
+            e.currentTarget.style.color = "#f87171"
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.background = "transparent"
+            e.currentTarget.style.color = "rgba(255,255,255,0.3)"
+          }}
+        >
+          🚪 Se déconnecter
+        </button>
+
       </aside>
 
-      <main className="flex-1 p-8">
-        {children}
+      {/* MAIN */}
+      <main style={{
+        flex: 1, padding: "2rem",
+        background: "#0a0a0f",
+        minHeight: "100vh", overflowY: "auto"
+      }}>
+
+        {/* Glow subtil en arrière plan */}
+        <div style={{
+          position: "fixed", top: "10%", right: "10%",
+          width: "400px", height: "300px",
+          background: "radial-gradient(ellipse, rgba(139,92,246,0.06) 0%, transparent 70%)",
+          pointerEvents: "none", zIndex: 0
+        }} />
+
+        <div style={{ position: "relative", zIndex: 1 }}>
+          {children}
+        </div>
+
       </main>
 
     </div>
