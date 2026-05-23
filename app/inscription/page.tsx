@@ -19,7 +19,7 @@ export default function Inscription() {
       const response = await api.post("/auth/register", { name, email, password })
       localStorage.setItem("bizora_token", response.data.token)
       localStorage.setItem("bizora_user", JSON.stringify(response.data.user))
-      router.push("/dashboard")
+      router.push("/onboarding")
     } catch (err: any) {
       setError(err.response?.data?.message || "Une erreur est survenue")
     } finally {
