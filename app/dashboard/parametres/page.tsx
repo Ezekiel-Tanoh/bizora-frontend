@@ -83,7 +83,7 @@ export default function Parametres() {
         <button
           onClick={handleSave}
           style={{
-            padding: "10px 20px", borderRadius: "10px", border: "none",
+            padding: "10px 20px", borderRadius: "10px",
             background: saved ? "rgba(52,211,153,0.2)" : "linear-gradient(135deg, #8b5cf6, #6d28d9)",
             color: saved ? "#34d399" : "#fff",
             fontSize: "14px", fontWeight: "600", cursor: "pointer",
