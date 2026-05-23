@@ -56,7 +56,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {navItems.map((item) => {
             const active = pathname === item.href
             return (
-              
+              <a
                 key={item.href}
                 href={item.href}
                 style={{
