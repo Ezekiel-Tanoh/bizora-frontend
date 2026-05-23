@@ -12,7 +12,7 @@ export default function Produits() {
   const fetchProduits = async () => {
     try {
       const user = JSON.parse(localStorage.getItem("bizora_user") || "{}")
-      const response = await api.get(`/products/${user.id}`)
+      const response = await api.get(`/products/${user.storeId}`)
       setProduits(response.data)
     } catch (err) {
       console.error(err)
