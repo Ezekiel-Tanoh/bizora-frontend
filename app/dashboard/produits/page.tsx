@@ -1,7 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import api from "@/lib/api"
+import { getPlan, limites } from "@/lib/plan"
 import NouveauProduitModal from "@/components/NouveauProduitModal"
 
 const cardStyle = {
@@ -12,11 +14,18 @@ const cardStyle = {
 }
 
 export default function Produits() {
+  const router = useRouter()
+  const [plan, setPlan] = useState<"gratuit" | "pro" | "business">("gratuit")
   const [produits, setProduits] = useState<any[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
   const [categorie, setCategorie] = useState("Toutes")
+
+  useEffect(() => {
+    setPlan(getPlan())
+    fetchProduits()
+  }, [])
 
   const fetchProduits = async () => {
     try {
@@ -42,6 +51,17 @@ export default function Produits() {
     }
   }
 
+  const limite = limites[plan].produits
+  const limiteAtteinte = limite !== Infinity && produits.length >= limite
+
+  const handleAjouter = () => {
+    if (limiteAtteinte) {
+      router.push("/pricing")
+      return
+    }
+    setIsModalOpen(true)
+  }
+
   const filtered = produits.filter(p => {
     const matchSearch = p.name?.toLowerCase().includes(search.toLowerCase())
     const matchCat = categorie === "Toutes" || p.category === categorie
@@ -58,42 +78,17 @@ export default function Produits() {
   return (
     <>
       <style>{`
-        .produits-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 2rem;
-        }
-        .produits-kpi {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 1rem;
-          margin-bottom: 1.5rem;
-        }
-        .produits-filtres {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 1rem 1.25rem;
-          border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
+        .produits-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .produits-kpi { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+        .produits-filtres { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
         .produits-table { display: block; }
         .produits-cards { display: none; }
         @media (max-width: 768px) {
-          .produits-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 1rem;
-          }
+          .produits-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
           .produits-header button { width: 100%; }
           .produits-kpi { grid-template-columns: repeat(2, 1fr); }
-          .produits-filtres {
-            flex-direction: column;
-            gap: 0.75rem;
-            align-items: stretch;
-          }
-          .produits-filtres input,
-          .produits-filtres select { width: 100%; }
+          .produits-filtres { flex-direction: column; gap: 0.75rem; align-items: stretch; }
+          .produits-filtres input, .produits-filtres select { width: 100%; }
           .produits-table { display: none; }
           .produits-cards { display: flex; flex-direction: column; gap: 0.75rem; padding: 1rem; }
         }
@@ -115,34 +110,69 @@ export default function Produits() {
             </p>
           </div>
           <button
-            onClick={() => setIsModalOpen(true)}
+            onClick={handleAjouter}
             style={{
-              padding: "10px 20px", borderRadius: "10px", border: "none",
-              background: "linear-gradient(135deg, #8b5cf6, #6d28d9)",
-              color: "#fff", fontSize: "14px", fontWeight: "600",
-              cursor: "pointer", boxShadow: "0 0 20px rgba(139,92,246,0.3)"
+              padding: "10px 20px", borderRadius: "10px",
+              background: limiteAtteinte
+                ? "rgba(251,191,36,0.15)"
+                : "linear-gradient(135deg, #8b5cf6, #6d28d9)",
+              color: limiteAtteinte ? "#fbbf24" : "#fff",
+              fontSize: "14px", fontWeight: "600",
+              cursor: "pointer",
+              boxShadow: limiteAtteinte ? "none" : "0 0 20px rgba(139,92,246,0.3)",
+              border: limiteAtteinte ? "1px solid rgba(251,191,36,0.3)" : "none" as any
             }}
           >
-            + Ajouter un produit
+            {limiteAtteinte ? "🔒 Limite atteinte — Passer au Pro" : "+ Ajouter un produit"}
           </button>
         </div>
 
+        {/* Banner limite atteinte */}
+        {limiteAtteinte && (
+          <div style={{
+            background: "rgba(251,191,36,0.08)",
+            border: "1px solid rgba(251,191,36,0.25)",
+            borderRadius: "12px", padding: "1rem 1.25rem",
+            marginBottom: "1.5rem",
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            flexWrap: "wrap", gap: "1rem"
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <span style={{ fontSize: "20px" }}>⚠️</span>
+              <div>
+                <p style={{ fontSize: "14px", fontWeight: "600", color: "#fbbf24", margin: 0 }}>
+                  Limite de {limite} produits atteinte
+                </p>
+                <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", margin: "2px 0 0" }}>
+                  Passez au plan Pro pour ajouter des produits illimités
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => router.push("/pricing")}
+              style={{
+                padding: "8px 18px", borderRadius: "8px", border: "none",
+                background: "linear-gradient(135deg, #8b5cf6, #6d28d9)",
+                color: "#fff", fontSize: "13px", fontWeight: "600",
+                cursor: "pointer", boxShadow: "0 0 12px rgba(139,92,246,0.3)"
+              }}
+            >
+              Passer au Pro →
+            </button>
+          </div>
+        )}
+
+        {/* KPIs */}
         <div className="produits-kpi">
           {[
-            { label: "Total produits", value: produits.length, color: "#fff", icon: "📦" },
+            { label: "Total produits", value: `${produits.length}${limite !== Infinity ? `/${limite}` : ""}`, color: limiteAtteinte ? "#fbbf24" : "#fff", icon: "📦" },
             { label: "En stock", value: produits.filter(p => p.stock > 5).length, color: "#34d399", icon: "✅" },
             { label: "Stock faible", value: produits.filter(p => p.stock > 0 && p.stock <= 5).length, color: "#fbbf24", icon: "⚠️" },
             { label: "Rupture", value: produits.filter(p => p.stock === 0).length, color: "#f87171", icon: "❌" },
           ].map((kpi, i) => (
             <div key={i} style={{ ...cardStyle, transition: "all 0.2s" }}
-              onMouseEnter={e => {
-                e.currentTarget.style.borderColor = "rgba(139,92,246,0.3)"
-                e.currentTarget.style.background = "rgba(139,92,246,0.06)"
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)"
-                e.currentTarget.style.background = "rgba(255,255,255,0.03)"
-              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(139,92,246,0.3)"; e.currentTarget.style.background = "rgba(139,92,246,0.06)" }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)"; e.currentTarget.style.background = "rgba(255,255,255,0.03)" }}
             >
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", margin: "0 0 8px" }}>{kpi.label}</p>
@@ -153,6 +183,7 @@ export default function Produits() {
           ))}
         </div>
 
+        {/* Table */}
         <div style={{ ...cardStyle, padding: 0, overflow: "hidden" }}>
 
           <div className="produits-filtres">
@@ -161,22 +192,10 @@ export default function Produits() {
               placeholder="🔍 Rechercher un produit..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              style={{
-                background: "rgba(255,255,255,0.05)",
-                border: "1px solid rgba(255,255,255,0.1)",
-                borderRadius: "10px", padding: "8px 14px",
-                color: "#fff", fontSize: "13px", outline: "none", width: "240px"
-              }}
+              style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "10px", padding: "8px 14px", color: "#fff", fontSize: "13px", outline: "none", width: "240px" }}
             />
-            <select
-              value={categorie}
-              onChange={e => setCategorie(e.target.value)}
-              style={{
-                background: "rgba(255,255,255,0.05)",
-                border: "1px solid rgba(255,255,255,0.1)",
-                borderRadius: "10px", padding: "8px 14px",
-                color: "rgba(255,255,255,0.6)", fontSize: "13px", outline: "none"
-              }}
+            <select value={categorie} onChange={e => setCategorie(e.target.value)}
+              style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "10px", padding: "8px 14px", color: "rgba(255,255,255,0.6)", fontSize: "13px", outline: "none" }}
             >
               {["Toutes", "Mode", "Alimentation", "Électronique", "Beauté"].map(c => (
                 <option key={c} style={{ background: "#1a1a2e" }}>{c}</option>
@@ -190,11 +209,7 @@ export default function Produits() {
               <thead>
                 <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
                   {["Produit", "Catégorie", "Prix", "Stock", "Statut", "Actions"].map(h => (
-                    <th key={h} style={{
-                      textAlign: "left", fontSize: "11px",
-                      color: "rgba(255,255,255,0.3)", fontWeight: "500",
-                      padding: "10px 16px", textTransform: "uppercase", letterSpacing: "0.05em"
-                    }}>{h}</th>
+                    <th key={h} style={{ textAlign: "left", fontSize: "11px", color: "rgba(255,255,255,0.3)", fontWeight: "500", padding: "10px 16px", textTransform: "uppercase", letterSpacing: "0.05em" }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -217,23 +232,15 @@ export default function Produits() {
                     >
                       <td style={{ padding: "12px 16px" }}>
                         <p style={{ fontSize: "14px", fontWeight: "500", margin: "0 0 2px" }}>{produit.name}</p>
-                        <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.3)", margin: 0 }}>
-                          {produit.description?.slice(0, 40)}...
-                        </p>
+                        <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.3)", margin: 0 }}>{produit.description?.slice(0, 40)}...</p>
                       </td>
                       <td style={{ padding: "12px 16px" }}>
-                        <span style={{
-                          fontSize: "12px", padding: "3px 10px", borderRadius: "100px",
-                          background: "rgba(139,92,246,0.15)", color: "#a78bfa",
-                          border: "1px solid rgba(139,92,246,0.2)"
-                        }}>
+                        <span style={{ fontSize: "12px", padding: "3px 10px", borderRadius: "100px", background: "rgba(139,92,246,0.15)", color: "#a78bfa", border: "1px solid rgba(139,92,246,0.2)" }}>
                           {produit.category || "Général"}
                         </span>
                       </td>
                       <td style={{ padding: "12px 16px" }}>
-                        <p style={{ fontSize: "14px", fontWeight: "600", margin: 0, color: "#a78bfa" }}>
-                          {produit.price?.toLocaleString()} FCFA
-                        </p>
+                        <p style={{ fontSize: "14px", fontWeight: "600", margin: 0, color: "#a78bfa" }}>{produit.price?.toLocaleString()} FCFA</p>
                       </td>
                       <td style={{ padding: "12px 16px" }}>
                         <p style={{ fontSize: "14px", margin: 0 }}>{produit.stock}</p>
@@ -271,11 +278,7 @@ export default function Produits() {
               </div>
             ) : (
               filtered.map((produit) => (
-                <div key={produit.id} style={{
-                  background: "rgba(255,255,255,0.03)",
-                  border: "1px solid rgba(255,255,255,0.07)",
-                  borderRadius: "12px", padding: "1rem"
-                }}>
+                <div key={produit.id} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "12px", padding: "1rem" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
                     <p style={{ fontSize: "14px", fontWeight: "600", margin: 0 }}>{produit.name}</p>
                     {produit.stock === 0 ? (
