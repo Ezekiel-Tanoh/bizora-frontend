@@ -268,10 +268,10 @@ export default function Pricing() {
             Contactez-nous sur WhatsApp ou par email
           </p>
           <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
-            <a href="https://wa.me/2250700000000" style={{ padding: "10px 20px", borderRadius: "10px", background: "rgba(37,211,102,0.1)", border: "1px solid rgba(37,211,102,0.3)", color: "#25d366", fontSize: "14px", textDecoration: "none" }}>
+            <a href="https://wa.me/2250797662306" style={{ padding: "10px 20px", borderRadius: "10px", background: "rgba(37,211,102,0.1)", border: "1px solid rgba(37,211,102,0.3)", color: "#25d366", fontSize: "14px", textDecoration: "none" }}>
               💬 WhatsApp
             </a>
-            <a href="mailto:support@bizora.app" style={{ padding: "10px 20px", borderRadius: "10px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.6)", fontSize: "14px", textDecoration: "none" }}>
+            <a href="cybertechafrique@gmail.com" style={{ padding: "10px 20px", borderRadius: "10px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.6)", fontSize: "14px", textDecoration: "none" }}>
               📧 Email
             </a>
           </div>
