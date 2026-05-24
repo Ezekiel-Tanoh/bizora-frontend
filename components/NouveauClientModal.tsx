@@ -43,69 +43,123 @@ export default function NouveauClientModal({ isOpen, onClose, onSuccess }: Props
     }
   }
 
+  const inputStyle = {
+    width: "100%", padding: "10px 14px", borderRadius: "10px",
+    background: "rgba(255,255,255,0.05)",
+    border: "1px solid rgba(255,255,255,0.1)",
+    color: "#fff", fontSize: "13px", outline: "none",
+    boxSizing: "border-box" as any, transition: "border 0.2s"
+  }
+
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl p-6 w-full max-w-md">
+    <div style={{
+      position: "fixed", inset: 0, zIndex: 50,
+      background: "rgba(0,0,0,0.7)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      backdropFilter: "blur(4px)"
+    }}>
+      <div style={{
+        background: "#13131f",
+        border: "1px solid rgba(139,92,246,0.2)",
+        borderRadius: "20px", padding: "2rem",
+        width: "100%", maxWidth: "440px",
+        boxShadow: "0 0 40px rgba(139,92,246,0.1)",
+        fontFamily: "'Inter', sans-serif", color: "#fff"
+      }}>
 
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">Nouveau client</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+          <h2 style={{ fontSize: "1.1rem", fontWeight: "700", margin: 0 }}>Nouveau client</h2>
+          <button
+            onClick={onClose}
+            style={{
+              background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: "8px", width: "32px", height: "32px",
+              color: "rgba(255,255,255,0.5)", fontSize: "16px", cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center"
+            }}
+          >✕</button>
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-100 rounded-lg px-3 py-2 mb-4">
-            <p className="text-xs text-red-500">{error}</p>
+          <div style={{
+            background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)",
+            borderRadius: "10px", padding: "10px 14px", marginBottom: "1.25rem"
+          }}>
+            <p style={{ fontSize: "13px", color: "#f87171", margin: 0 }}>{error}</p>
           </div>
         )}
 
-        <div className="flex flex-col gap-4">
+        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Nom complet *</label>
+            <label style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", display: "block", marginBottom: "6px" }}>
+              Nom complet <span style={{ color: "#a78bfa" }}>*</span>
+            </label>
             <input
               type="text"
               placeholder="Ex: Kouassi Jean"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-violet-400"
+              style={inputStyle}
+              onFocus={e => (e.currentTarget.style.borderColor = "rgba(139,92,246,0.6)")}
+              onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
             />
           </div>
 
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Téléphone *</label>
+            <label style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", display: "block", marginBottom: "6px" }}>
+              Téléphone <span style={{ color: "#a78bfa" }}>*</span>
+            </label>
             <input
               type="text"
               placeholder="Ex: +225 07 00 00 00 00"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-violet-400"
+              style={inputStyle}
+              onFocus={e => (e.currentTarget.style.borderColor = "rgba(139,92,246,0.6)")}
+              onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
             />
           </div>
 
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Email</label>
+            <label style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", display: "block", marginBottom: "6px" }}>
+              Email <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.2)" }}>(optionnel)</span>
+            </label>
             <input
               type="email"
               placeholder="client@exemple.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-violet-400"
+              style={inputStyle}
+              onFocus={e => (e.currentTarget.style.borderColor = "rgba(139,92,246,0.6)")}
+              onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
             />
           </div>
         </div>
 
-        <div className="flex gap-3 mt-6">
+        <div style={{ display: "flex", gap: "10px", marginTop: "1.5rem" }}>
           <button
             onClick={onClose}
-            className="flex-1 border border-gray-200 text-gray-600 rounded-lg py-2 text-sm hover:bg-gray-50 transition-colors"
+            style={{
+              flex: 1, padding: "10px", borderRadius: "10px",
+              background: "rgba(255,255,255,0.05)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              color: "rgba(255,255,255,0.6)", fontSize: "14px", cursor: "pointer"
+            }}
           >
             Annuler
           </button>
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="flex-1 bg-violet-500 hover:bg-violet-600 text-white rounded-lg py-2 text-sm transition-colors disabled:opacity-50"
+            style={{
+              flex: 1, padding: "10px", borderRadius: "10px", border: "none",
+              background: loading ? "rgba(139,92,246,0.5)" : "linear-gradient(135deg, #8b5cf6, #6d28d9)",
+              color: "#fff", fontSize: "14px", fontWeight: "600",
+              cursor: loading ? "not-allowed" : "pointer",
+              boxShadow: "0 0 12px rgba(139,92,246,0.3)"
+            }}
           >
             {loading ? "Création..." : "Ajouter le client"}
           </button>
