@@ -19,54 +19,32 @@ export default function PaiementModal({ isOpen, onClose, montant = 0 }: Props) {
     {
       id: "orange",
       nom: "Orange Money",
-      couleur: "bg-orange-500",
-      textColor: "text-orange-500",
-      borderColor: "border-orange-500",
-      bgLight: "bg-orange-50",
-      emoji: "🟠",
-      prefix: "+225 07",
+      color: "#ff6600",
+      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Orange_logo.svg/240px-Orange_logo.svg.png",
     },
     {
       id: "wave",
       nom: "Wave",
-      couleur: "bg-blue-500",
-      textColor: "text-blue-500",
-      borderColor: "border-blue-500",
-      bgLight: "bg-blue-50",
-      emoji: "🔵",
-      prefix: "+225 01",
+      color: "#1da9f5",
+      logo: "https://play-lh.googleusercontent.com/MEo8fxOMJGMmMSPMkrOTiVC9aYNiQhWaWKlLLB4RCnYMxFIaHHLrXQiRWVxwINMD_Q=w240-h480-rw",
     },
     {
       id: "mtn",
       nom: "MTN Money",
-      couleur: "bg-yellow-400",
-      textColor: "text-yellow-600",
-      borderColor: "border-yellow-400",
-      bgLight: "bg-yellow-50",
-      emoji: "🟡",
-      prefix: "+225 05",
+      color: "#ffcc00",
+      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/New-mtn-logo.jpg/240px-New-mtn-logo.jpg",
     },
     {
       id: "moov",
       nom: "Moov Money",
-      couleur: "bg-blue-700",
-      textColor: "text-blue-700",
-      borderColor: "border-blue-700",
-      bgLight: "bg-blue-50",
-      emoji: "🔷",
-      prefix: "+225 01",
+      color: "#0066cc",
+      logo: "https://play-lh.googleusercontent.com/cHkSFkCxcOElHBSqIYpGu0HqZXimrXMfbkBNzpLLVhGBRH6g8iFWXfNUumPJ9SXuLA=w240-h480-rw",
     },
   ]
 
   const handlePayer = async () => {
-    if (!methode) {
-      setError("Choisissez un moyen de paiement")
-      return
-    }
-    if (!telephone || telephone.length < 8) {
-      setError("Entrez un numéro de téléphone valide")
-      return
-    }
+    if (!methode) { setError("Choisissez un moyen de paiement"); return }
+    if (!telephone || telephone.length < 8) { setError("Entrez un numéro valide"); return }
     setLoading(true)
     setError("")
 
@@ -77,124 +55,240 @@ export default function PaiementModal({ isOpen, onClose, montant = 0 }: Props) {
   }
 
   const handleClose = () => {
-    setMethode("")
-    setTelephone("")
-    setSuccess(false)
-    setError("")
+    setMethode(""); setTelephone(""); setSuccess(false); setError("")
     onClose()
   }
 
   if (!isOpen) return null
 
+  const selectedMethode = methodes.find(m => m.id === methode)
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl p-6 w-full max-w-md">
+    <div style={{
+      position: "fixed", inset: 0, zIndex: 50,
+      background: "rgba(0,0,0,0.75)", backdropFilter: "blur(6px)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      padding: "1rem"
+    }}>
+      <div style={{
+        background: "#13131f",
+        border: "1px solid rgba(139,92,246,0.2)",
+        borderRadius: "20px", padding: "2rem",
+        width: "100%", maxWidth: "440px",
+        boxShadow: "0 0 60px rgba(139,92,246,0.12)",
+        fontFamily: "'Inter', sans-serif", color: "#fff"
+      }}>
 
         {success ? (
-          <div className="text-center py-8">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-3xl">✅</span>
-            </div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">Paiement initié !</h2>
-            <p className="text-sm text-gray-500 mb-2">
-              Une demande de paiement a été envoyée au numéro
+          <div style={{ textAlign: "center", padding: "1rem 0" }}>
+            <div style={{
+              width: "64px", height: "64px", borderRadius: "50%",
+              background: "rgba(52,211,153,0.1)",
+              border: "1px solid rgba(52,211,153,0.3)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              margin: "0 auto 1.5rem", fontSize: "2rem"
+            }}>✅</div>
+
+            <h2 style={{ fontSize: "1.2rem", fontWeight: "700", marginBottom: "0.5rem" }}>
+              Paiement initié !
+            </h2>
+            <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.4)", marginBottom: "0.5rem" }}>
+              Demande envoyée au numéro
             </p>
-            <p className="text-sm font-semibold text-gray-900 mb-4">{telephone}</p>
-            <p className="text-xs text-gray-400 mb-6">
-              Veuillez confirmer le paiement sur votre téléphone
+            <p style={{ fontSize: "15px", fontWeight: "600", color: "#a78bfa", marginBottom: "1.5rem" }}>
+              {telephone}
             </p>
-            <div className="bg-violet-50 rounded-xl p-4 mb-6">
-              <p className="text-sm text-violet-700 font-medium">
-                Montant : {montant.toLocaleString()} FCFA
-              </p>
-              <p className="text-xs text-violet-500 mt-1">
-                via {methodes.find(m => m.id === methode)?.nom}
-              </p>
+
+            <div style={{
+              background: "rgba(139,92,246,0.08)",
+              border: "1px solid rgba(139,92,246,0.2)",
+              borderRadius: "12px", padding: "1rem",
+              marginBottom: "1.5rem",
+              display: "flex", alignItems: "center", justifyContent: "center", gap: "12px"
+            }}>
+              {selectedMethode && (
+                <img
+                  src={selectedMethode.logo}
+                  alt={selectedMethode.nom}
+                  style={{ width: "36px", height: "36px", borderRadius: "8px", objectFit: "contain" }}
+                />
+              )}
+              <div style={{ textAlign: "left" }}>
+                <p style={{ fontSize: "1.2rem", fontWeight: "700", color: "#a78bfa", margin: "0 0 2px" }}>
+                  {montant.toLocaleString()} FCFA
+                </p>
+                <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.35)", margin: 0 }}>
+                  via {selectedMethode?.nom}
+                </p>
+              </div>
             </div>
-            <button
-              onClick={handleClose}
-              className="w-full bg-violet-500 hover:bg-violet-600 text-white rounded-lg py-2.5 text-sm font-medium transition-colors"
-            >
+
+            <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.3)", marginBottom: "1.5rem" }}>
+              Confirmez le paiement sur votre téléphone
+            </p>
+
+            <button onClick={handleClose} style={{
+              width: "100%", padding: "12px", borderRadius: "10px", border: "none",
+              background: "linear-gradient(135deg, #8b5cf6, #6d28d9)",
+              color: "#fff", fontSize: "14px", fontWeight: "600", cursor: "pointer",
+              boxShadow: "0 0 20px rgba(139,92,246,0.3)"
+            }}>
               Fermer
             </button>
           </div>
+
         ) : (
           <>
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-lg font-semibold text-gray-900">Paiement Mobile Money</h2>
-              <button onClick={handleClose} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
+            {/* Header */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+              <h2 style={{ fontSize: "1.1rem", fontWeight: "700", margin: 0 }}>
+                Paiement Mobile Money
+              </h2>
+              <button onClick={handleClose} style={{
+                background: "rgba(255,255,255,0.05)", border: "none",
+                color: "rgba(255,255,255,0.5)", width: "32px", height: "32px",
+                borderRadius: "8px", cursor: "pointer", fontSize: "16px"
+              }}>✕</button>
             </div>
 
+            {/* Montant */}
             {montant > 0 && (
-              <div className="bg-violet-50 rounded-xl p-4 mb-6">
-                <p className="text-xs text-violet-600 mb-1">Montant à payer</p>
-                <p className="text-2xl font-semibold text-violet-700">{montant.toLocaleString()} FCFA</p>
+              <div style={{
+                background: "rgba(139,92,246,0.08)",
+                border: "1px solid rgba(139,92,246,0.2)",
+                borderRadius: "12px", padding: "1rem", marginBottom: "1.5rem"
+              }}>
+                <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", margin: "0 0 4px" }}>
+                  Montant à payer
+                </p>
+                <p style={{ fontSize: "1.6rem", fontWeight: "700", color: "#a78bfa", margin: 0 }}>
+                  {montant.toLocaleString()} FCFA
+                </p>
               </div>
             )}
 
+            {/* Erreur */}
             {error && (
-              <div className="bg-red-50 border border-red-100 rounded-lg px-3 py-2 mb-4">
-                <p className="text-xs text-red-500">{error}</p>
+              <div style={{
+                background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)",
+                borderRadius: "10px", padding: "10px 14px", marginBottom: "1rem"
+              }}>
+                <p style={{ fontSize: "13px", color: "#f87171", margin: 0 }}>{error}</p>
               </div>
             )}
 
-            <div className="mb-4">
-              <label className="block text-sm text-gray-600 mb-3">Choisir le moyen de paiement</label>
-              <div className="grid grid-cols-2 gap-3">
-                {methodes.map((m) => (
-                  <button
-                    key={m.id}
-                    onClick={() => setMethode(m.id)}
-                    className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all ${
-                      methode === m.id
-                        ? `${m.borderColor} ${m.bgLight}`
-                        : "border-gray-100 hover:border-gray-200"
-                    }`}
-                  >
-                    <span className="text-2xl">{m.emoji}</span>
-                    <div className="text-left">
-                      <p className={`text-xs font-semibold ${methode === m.id ? m.textColor : "text-gray-700"}`}>
-                        {m.nom}
-                      </p>
-                    </div>
-                  </button>
-                ))}
+            {/* Méthodes avec vrais logos */}
+            <div style={{ marginBottom: "1.25rem" }}>
+              <label style={{ fontSize: "13px", color: "rgba(255,255,255,0.5)", display: "block", marginBottom: "10px" }}>
+                Choisir le moyen de paiement
+              </label>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                {methodes.map((m) => {
+                  const selected = methode === m.id
+                  return (
+                    <button
+                      key={m.id}
+                      onClick={() => setMethode(m.id)}
+                      style={{
+                        display: "flex", alignItems: "center", gap: "12px",
+                        padding: "14px", borderRadius: "14px", cursor: "pointer",
+                        border: selected ? `1.5px solid ${m.color}` : "1px solid rgba(255,255,255,0.08)",
+                        background: selected ? `${m.color}18` : "rgba(255,255,255,0.02)",
+                        transition: "all 0.2s", textAlign: "left"
+                      }}
+                      onMouseEnter={e => {
+                        if (!selected) e.currentTarget.style.background = "rgba(255,255,255,0.05)"
+                      }}
+                      onMouseLeave={e => {
+                        if (!selected) e.currentTarget.style.background = "rgba(255,255,255,0.02)"
+                      }}
+                    >
+                      {/* Logo */}
+                      <div style={{
+                        width: "42px", height: "42px", borderRadius: "10px",
+                        background: "#fff",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        flexShrink: 0, overflow: "hidden",
+                        boxShadow: selected ? `0 0 12px ${m.color}40` : "none"
+                      }}>
+                        <img
+                          src={m.logo}
+                          alt={m.nom}
+                          style={{ width: "36px", height: "36px", objectFit: "contain" }}
+                          onError={e => {
+                            e.currentTarget.style.display = "none"
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <p style={{
+                          fontSize: "13px", fontWeight: "600", margin: "0 0 2px",
+                          color: selected ? "#fff" : "rgba(255,255,255,0.7)"
+                        }}>
+                          {m.nom}
+                        </p>
+                        {selected && (
+                          <p style={{ fontSize: "11px", color: m.color, margin: 0 }}>✓ Sélectionné</p>
+                        )}
+                      </div>
+                    </button>
+                  )
+                })}
               </div>
             </div>
 
-            <div className="mb-6">
-              <label className="block text-sm text-gray-600 mb-1">Numéro de téléphone</label>
+            {/* Téléphone */}
+            <div style={{ marginBottom: "1.5rem" }}>
+              <label style={{ fontSize: "13px", color: "rgba(255,255,255,0.5)", display: "block", marginBottom: "6px" }}>
+                Numéro de téléphone
+              </label>
               <input
                 type="tel"
                 placeholder="Ex: 07 00 00 00 00"
                 value={telephone}
                 onChange={(e) => setTelephone(e.target.value)}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-violet-400"
+                style={{
+                  width: "100%", padding: "10px 14px", borderRadius: "10px",
+                  background: "rgba(255,255,255,0.05)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  color: "#fff", fontSize: "14px", outline: "none",
+                  boxSizing: "border-box", transition: "border 0.2s"
+                }}
+                onFocus={e => (e.currentTarget.style.borderColor = "rgba(139,92,246,0.6)")}
+                onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
               />
-              <p className="text-xs text-gray-400 mt-1">
+              <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.25)", marginTop: "6px" }}>
                 Le client recevra une notification sur ce numéro
               </p>
             </div>
 
-            <div className="flex gap-3">
-              <button
-                onClick={handleClose}
-                className="flex-1 border border-gray-200 text-gray-600 rounded-lg py-2 text-sm hover:bg-gray-50 transition-colors"
+            {/* Boutons */}
+            <div style={{ display: "flex", gap: "10px" }}>
+              <button onClick={handleClose} style={{
+                flex: 1, padding: "11px", borderRadius: "10px",
+                border: "1px solid rgba(255,255,255,0.1)",
+                background: "transparent", color: "rgba(255,255,255,0.5)",
+                fontSize: "14px", cursor: "pointer", transition: "all 0.2s"
+              }}
+                onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.05)")}
+                onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
               >
                 Annuler
               </button>
               <button
                 onClick={handlePayer}
                 disabled={loading}
-                className="flex-1 bg-violet-500 hover:bg-violet-600 text-white rounded-lg py-2 text-sm font-medium transition-colors disabled:opacity-50"
+                style={{
+                  flex: 1, padding: "11px", borderRadius: "10px", border: "none",
+                  background: loading ? "rgba(139,92,246,0.5)" : "linear-gradient(135deg, #8b5cf6, #6d28d9)",
+                  color: "#fff", fontSize: "14px", fontWeight: "600",
+                  cursor: loading ? "not-allowed" : "pointer",
+                  boxShadow: "0 0 20px rgba(139,92,246,0.3)", transition: "all 0.2s"
+                }}
+                onMouseEnter={e => { if (!loading) e.currentTarget.style.transform = "translateY(-1px)" }}
+                onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)" }}
               >
-                {loading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <span className="animate-spin">⏳</span> Traitement...
-                  </span>
-                ) : (
-                  "💳 Payer maintenant"
-                )}
+                {loading ? "⏳ Traitement..." : "💳 Payer maintenant"}
               </button>
             </div>
           </>
