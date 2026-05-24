@@ -46,11 +46,7 @@ export default function NouvelleCommandeModal({ isOpen, onClose, onSuccess }: Pr
     const newItems = [...items]
     if (field === "productId") {
       const produit = produits.find(p => p.id === value)
-      newItems[index] = {
-        ...newItems[index],
-        productId: value,
-        prix: produit ? produit.price : 0,
-      }
+      newItems[index] = { ...newItems[index], productId: value, prix: produit ? produit.price : 0 }
     } else {
       newItems[index] = { ...newItems[index], [field]: value }
     }
@@ -89,60 +85,109 @@ export default function NouvelleCommandeModal({ isOpen, onClose, onSuccess }: Pr
     }
   }
 
+  const inputStyle = {
+    width: "100%", padding: "10px 14px", borderRadius: "10px",
+    background: "rgba(255,255,255,0.05)",
+    border: "1px solid rgba(255,255,255,0.1)",
+    color: "#fff", fontSize: "13px", outline: "none",
+    boxSizing: "border-box" as any, transition: "border 0.2s"
+  }
+
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl p-6 w-full max-w-lg max-h-screen overflow-y-auto">
+    <div style={{
+      position: "fixed", inset: 0, zIndex: 50,
+      background: "rgba(0,0,0,0.7)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      backdropFilter: "blur(4px)"
+    }}>
+      <div style={{
+        background: "#13131f",
+        border: "1px solid rgba(139,92,246,0.2)",
+        borderRadius: "20px", padding: "2rem",
+        width: "100%", maxWidth: "520px",
+        maxHeight: "90vh", overflowY: "auto",
+        boxShadow: "0 0 40px rgba(139,92,246,0.1)",
+        fontFamily: "'Inter', sans-serif", color: "#fff"
+      }}>
 
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">Nouvelle commande</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+          <h2 style={{ fontSize: "1.1rem", fontWeight: "700", margin: 0 }}>Nouvelle commande</h2>
+          <button
+            onClick={onClose}
+            style={{
+              background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: "8px", width: "32px", height: "32px",
+              color: "rgba(255,255,255,0.5)", fontSize: "16px", cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center"
+            }}
+          >✕</button>
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-100 rounded-lg px-3 py-2 mb-4">
-            <p className="text-xs text-red-500">{error}</p>
+          <div style={{
+            background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)",
+            borderRadius: "10px", padding: "10px 14px", marginBottom: "1.25rem"
+          }}>
+            <p style={{ fontSize: "13px", color: "#f87171", margin: 0 }}>{error}</p>
           </div>
         )}
 
-        <div className="flex flex-col gap-4">
+        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
 
+          {/* Client */}
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Client *</label>
+            <label style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", display: "block", marginBottom: "6px" }}>
+              Client <span style={{ color: "#a78bfa" }}>*</span>
+            </label>
             <select
               value={clientId}
               onChange={(e) => setClientId(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-violet-400 text-gray-600"
+              style={{ ...inputStyle, cursor: "pointer" }}
+              onFocus={e => (e.currentTarget.style.borderColor = "rgba(139,92,246,0.6)")}
+              onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
             >
-              <option value="">Choisir un client</option>
+              <option value="" style={{ background: "#1a1a2e" }}>Choisir un client</option>
               {clients.map((c) => (
-                <option key={c.id} value={c.id}>{c.name} - {c.phone}</option>
+                <option key={c.id} value={c.id} style={{ background: "#1a1a2e" }}>
+                  {c.name} - {c.phone}
+                </option>
               ))}
             </select>
           </div>
 
+          {/* Produits */}
           <div>
-            <div className="flex justify-between items-center mb-2">
-              <label className="block text-sm text-gray-600">Produits *</label>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+              <label style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)" }}>
+                Produits <span style={{ color: "#a78bfa" }}>*</span>
+              </label>
               <button
                 onClick={handleAddItem}
-                className="text-xs text-violet-500 hover:text-violet-600"
+                style={{
+                  fontSize: "12px", color: "#a78bfa", background: "none",
+                  border: "none", cursor: "pointer", padding: 0
+                }}
               >
                 + Ajouter un produit
               </button>
             </div>
 
             {items.map((item, index) => (
-              <div key={index} className="flex gap-2 mb-2">
+              <div key={index} style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
                 <select
                   value={item.productId}
                   onChange={(e) => handleItemChange(index, "productId", e.target.value)}
-                  className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-violet-400 text-gray-600"
+                  style={{ ...inputStyle, flex: 1, cursor: "pointer" }}
+                  onFocus={e => (e.currentTarget.style.borderColor = "rgba(139,92,246,0.6)")}
+                  onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
                 >
-                  <option value="">Choisir un produit</option>
+                  <option value="" style={{ background: "#1a1a2e" }}>Choisir un produit</option>
                   {produits.map((p) => (
-                    <option key={p.id} value={p.id}>{p.name} - {p.price.toLocaleString()} FCFA</option>
+                    <option key={p.id} value={p.id} style={{ background: "#1a1a2e" }}>
+                      {p.name} - {p.price.toLocaleString()} FCFA
+                    </option>
                   ))}
                 </select>
                 <input
@@ -150,40 +195,62 @@ export default function NouvelleCommandeModal({ isOpen, onClose, onSuccess }: Pr
                   min="1"
                   value={item.quantite}
                   onChange={(e) => handleItemChange(index, "quantite", parseInt(e.target.value))}
-                  className="w-16 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-violet-400"
+                  style={{ ...inputStyle, width: "70px" }}
+                  onFocus={e => (e.currentTarget.style.borderColor = "rgba(139,92,246,0.6)")}
+                  onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
                 />
                 {items.length > 1 && (
                   <button
                     onClick={() => handleRemoveItem(index)}
-                    className="text-red-400 hover:text-red-500 text-sm"
-                  >
-                    ✕
-                  </button>
+                    style={{
+                      background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)",
+                      borderRadius: "8px", color: "#f87171", cursor: "pointer",
+                      padding: "0 10px", fontSize: "14px"
+                    }}
+                  >✕</button>
                 )}
               </div>
             ))}
           </div>
 
-          <div className="bg-violet-50 rounded-xl p-4">
-            <div className="flex justify-between items-center">
-              <p className="text-sm font-medium text-violet-700">Total commande</p>
-              <p className="text-lg font-semibold text-violet-700">{total.toLocaleString()} FCFA</p>
+          {/* Total */}
+          <div style={{
+            background: "rgba(139,92,246,0.08)",
+            border: "1px solid rgba(139,92,246,0.2)",
+            borderRadius: "12px", padding: "1rem"
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <p style={{ fontSize: "13px", fontWeight: "500", color: "#a78bfa", margin: 0 }}>Total commande</p>
+              <p style={{ fontSize: "1.2rem", fontWeight: "700", color: "#a78bfa", margin: 0 }}>
+                {total.toLocaleString()} FCFA
+              </p>
             </div>
           </div>
 
         </div>
 
-        <div className="flex gap-3 mt-6">
+        <div style={{ display: "flex", gap: "10px", marginTop: "1.5rem" }}>
           <button
             onClick={onClose}
-            className="flex-1 border border-gray-200 text-gray-600 rounded-lg py-2 text-sm hover:bg-gray-50 transition-colors"
+            style={{
+              flex: 1, padding: "10px", borderRadius: "10px",
+              background: "rgba(255,255,255,0.05)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              color: "rgba(255,255,255,0.6)", fontSize: "14px", cursor: "pointer"
+            }}
           >
             Annuler
           </button>
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="flex-1 bg-violet-500 hover:bg-violet-600 text-white rounded-lg py-2 text-sm transition-colors disabled:opacity-50"
+            style={{
+              flex: 1, padding: "10px", borderRadius: "10px", border: "none",
+              background: loading ? "rgba(139,92,246,0.5)" : "linear-gradient(135deg, #8b5cf6, #6d28d9)",
+              color: "#fff", fontSize: "14px", fontWeight: "600",
+              cursor: loading ? "not-allowed" : "pointer",
+              boxShadow: "0 0 12px rgba(139,92,246,0.3)"
+            }}
           >
             {loading ? "Création..." : "Créer la commande"}
           </button>

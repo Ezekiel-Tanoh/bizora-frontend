@@ -46,19 +46,14 @@ export default function NouveauProduitModal({ isOpen, onClose, onSuccess }: Prop
       const user = JSON.parse(localStorage.getItem("bizora_user") || "{}")
       await api.post("/products", {
         storeId: user.storeId,
-        name,
-        description,
+        name, description,
         price: parseFloat(price),
         stock: parseInt(stock),
         category,
       })
       onSuccess()
       onClose()
-      setName("")
-      setDescription("")
-      setPrice("")
-      setStock("")
-      setCategory("")
+      setName(""); setDescription(""); setPrice(""); setStock(""); setCategory("")
     } catch (err) {
       setError("Erreur lors de la création du produit")
     } finally {
@@ -66,107 +61,162 @@ export default function NouveauProduitModal({ isOpen, onClose, onSuccess }: Prop
     }
   }
 
+  const inputStyle = {
+    width: "100%", padding: "10px 14px", borderRadius: "10px",
+    background: "rgba(255,255,255,0.05)",
+    border: "1px solid rgba(255,255,255,0.1)",
+    color: "#fff", fontSize: "13px", outline: "none",
+    boxSizing: "border-box" as any, transition: "border 0.2s"
+  }
+
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl p-6 w-full max-w-md">
+    <div style={{
+      position: "fixed", inset: 0, zIndex: 50,
+      background: "rgba(0,0,0,0.7)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      backdropFilter: "blur(4px)"
+    }}>
+      <div style={{
+        background: "#13131f",
+        border: "1px solid rgba(139,92,246,0.2)",
+        borderRadius: "20px", padding: "2rem",
+        width: "100%", maxWidth: "460px",
+        maxHeight: "90vh", overflowY: "auto",
+        boxShadow: "0 0 40px rgba(139,92,246,0.1)",
+        fontFamily: "'Inter', sans-serif", color: "#fff"
+      }}>
 
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">Nouveau produit</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+          <h2 style={{ fontSize: "1.1rem", fontWeight: "700", margin: 0 }}>Nouveau produit</h2>
+          <button
+            onClick={onClose}
+            style={{
+              background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: "8px", width: "32px", height: "32px",
+              color: "rgba(255,255,255,0.5)", fontSize: "16px", cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center"
+            }}
+          >✕</button>
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-100 rounded-lg px-3 py-2 mb-4">
-            <p className="text-xs text-red-500">{error}</p>
+          <div style={{
+            background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)",
+            borderRadius: "10px", padding: "10px 14px", marginBottom: "1.25rem"
+          }}>
+            <p style={{ fontSize: "13px", color: "#f87171", margin: 0 }}>{error}</p>
           </div>
         )}
 
-        <div className="flex flex-col gap-4">
+        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+
+          {/* Nom */}
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Nom du produit *</label>
+            <label style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", display: "block", marginBottom: "6px" }}>
+              Nom du produit <span style={{ color: "#a78bfa" }}>*</span>
+            </label>
             <input
-              type="text"
-              placeholder="Ex: Robe en wax"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-violet-400"
+              type="text" placeholder="Ex: Robe en wax" value={name}
+              onChange={(e) => setName(e.target.value)} style={inputStyle}
+              onFocus={e => (e.currentTarget.style.borderColor = "rgba(139,92,246,0.6)")}
+              onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
             />
           </div>
 
+          {/* Catégorie */}
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Catégorie</label>
+            <label style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", display: "block", marginBottom: "6px" }}>
+              Catégorie
+            </label>
             <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-violet-400 text-gray-600"
+              value={category} onChange={(e) => setCategory(e.target.value)}
+              style={{ ...inputStyle, cursor: "pointer" }}
+              onFocus={e => (e.currentTarget.style.borderColor = "rgba(139,92,246,0.6)")}
+              onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
             >
-              <option value="">Choisir une catégorie</option>
-              <option value="Mode">Mode</option>
-              <option value="Alimentation">Alimentation</option>
-              <option value="Électronique">Électronique</option>
-              <option value="Beauté">Beauté</option>
-              <option value="Maison">Maison</option>
-              <option value="Autre">Autre</option>
+              <option value="" style={{ background: "#1a1a2e" }}>Choisir une catégorie</option>
+              {["Mode", "Alimentation", "Électronique", "Beauté", "Maison", "Autre"].map(c => (
+                <option key={c} value={c} style={{ background: "#1a1a2e" }}>{c}</option>
+              ))}
             </select>
           </div>
 
+          {/* Description */}
           <div>
-            <div className="flex justify-between items-center mb-1">
-              <label className="block text-sm text-gray-600">Description</label>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+              <label style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)" }}>Description</label>
               <button
                 onClick={handleGenerateDescription}
                 disabled={aiLoading || !name}
-                className="text-xs text-violet-500 hover:text-violet-600 disabled:opacity-50"
+                style={{
+                  fontSize: "12px", color: aiLoading || !name ? "rgba(255,255,255,0.2)" : "#a78bfa",
+                  background: "none", border: "none", cursor: aiLoading || !name ? "not-allowed" : "pointer",
+                  padding: 0
+                }}
               >
                 {aiLoading ? "Génération..." : "🤖 Générer avec IA"}
               </button>
             </div>
             <textarea
-              placeholder="Description du produit..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={3}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-violet-400 resize-none"
+              placeholder="Description du produit..." value={description}
+              onChange={(e) => setDescription(e.target.value)} rows={3}
+              style={{ ...inputStyle, resize: "none" }}
+              onFocus={e => (e.currentTarget.style.borderColor = "rgba(139,92,246,0.6)")}
+              onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          {/* Prix + Stock */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
             <div>
-              <label className="block text-sm text-gray-600 mb-1">Prix (FCFA) *</label>
+              <label style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", display: "block", marginBottom: "6px" }}>
+                Prix (FCFA) <span style={{ color: "#a78bfa" }}>*</span>
+              </label>
               <input
-                type="number"
-                placeholder="Ex: 15000"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-violet-400"
+                type="number" placeholder="Ex: 15000" value={price}
+                onChange={(e) => setPrice(e.target.value)} style={inputStyle}
+                onFocus={e => (e.currentTarget.style.borderColor = "rgba(139,92,246,0.6)")}
+                onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-600 mb-1">Stock *</label>
+              <label style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", display: "block", marginBottom: "6px" }}>
+                Stock <span style={{ color: "#a78bfa" }}>*</span>
+              </label>
               <input
-                type="number"
-                placeholder="Ex: 10"
-                value={stock}
-                onChange={(e) => setStock(e.target.value)}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-violet-400"
+                type="number" placeholder="Ex: 10" value={stock}
+                onChange={(e) => setStock(e.target.value)} style={inputStyle}
+                onFocus={e => (e.currentTarget.style.borderColor = "rgba(139,92,246,0.6)")}
+                onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
               />
             </div>
           </div>
         </div>
 
-        <div className="flex gap-3 mt-6">
+        <div style={{ display: "flex", gap: "10px", marginTop: "1.5rem" }}>
           <button
             onClick={onClose}
-            className="flex-1 border border-gray-200 text-gray-600 rounded-lg py-2 text-sm hover:bg-gray-50 transition-colors"
+            style={{
+              flex: 1, padding: "10px", borderRadius: "10px",
+              background: "rgba(255,255,255,0.05)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              color: "rgba(255,255,255,0.6)", fontSize: "14px", cursor: "pointer"
+            }}
           >
             Annuler
           </button>
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="flex-1 bg-violet-500 hover:bg-violet-600 text-white rounded-lg py-2 text-sm transition-colors disabled:opacity-50"
+            style={{
+              flex: 1, padding: "10px", borderRadius: "10px", border: "none",
+              background: loading ? "rgba(139,92,246,0.5)" : "linear-gradient(135deg, #8b5cf6, #6d28d9)",
+              color: "#fff", fontSize: "14px", fontWeight: "600",
+              cursor: loading ? "not-allowed" : "pointer",
+              boxShadow: "0 0 12px rgba(139,92,246,0.3)"
+            }}
           >
             {loading ? "Création..." : "Créer le produit"}
           </button>
