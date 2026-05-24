@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react"
 import api from "@/lib/api"
+import { getPlan, limites } from "@/lib/plan"
+import PlanBanner from "@/components/PlanBanner"
 import NouveauClientModal from "@/components/NouveauClientModal"
 
 const cardStyle = {
@@ -16,6 +18,7 @@ export default function Clients() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
+  const [plan, setPlan] = useState<"gratuit" | "pro" | "business">("gratuit")
 
   const fetchClients = async () => {
     try {
@@ -29,7 +32,10 @@ export default function Clients() {
     }
   }
 
-  useEffect(() => { fetchClients() }, [])
+  useEffect(() => {
+    fetchClients()
+    setPlan(getPlan())
+  }, [])
 
   const handleDelete = async (id: string) => {
     if (!confirm("Supprimer ce client ?")) return
@@ -53,12 +59,14 @@ export default function Clients() {
         .clients-kpi { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
         .clients-table { display: block; }
         .clients-cards { display: none; }
+        .clients-analytics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
         @media (max-width: 768px) {
           .clients-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
           .clients-header button { width: 100%; }
           .clients-kpi { grid-template-columns: repeat(2, 1fr); }
           .clients-table { display: none; }
           .clients-cards { display: flex; flex-direction: column; gap: 0.75rem; padding: 1rem; }
+          .clients-analytics { grid-template-columns: 1fr; }
         }
       `}</style>
 
@@ -71,13 +79,22 @@ export default function Clients() {
             <h1 style={{ fontSize: "1.5rem", fontWeight: "700", margin: 0 }}>Clients</h1>
             <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.4)", margin: "4px 0 0" }}>Gérez votre base de clients</p>
           </div>
-          <button onClick={() => setIsModalOpen(true)} style={{
-            padding: "10px 20px", borderRadius: "10px", border: "none",
-            background: "linear-gradient(135deg, #8b5cf6, #6d28d9)",
-            color: "#fff", fontSize: "14px", fontWeight: "600",
-            cursor: "pointer", boxShadow: "0 0 20px rgba(139,92,246,0.3)"
-          }}>
-            + Ajouter un client
+          <button
+            onClick={() => {
+              if (plan === "gratuit" && clients.length >= limites.gratuit.clients) {
+                alert(`Limite de ${limites.gratuit.clients} clients atteinte. Passez au plan Pro !`)
+                return
+              }
+              setIsModalOpen(true)
+            }}
+            style={{
+              padding: "10px 20px", borderRadius: "10px", border: "none",
+              background: "linear-gradient(135deg, #8b5cf6, #6d28d9)",
+              color: "#fff", fontSize: "14px", fontWeight: "600",
+              cursor: "pointer", boxShadow: "0 0 20px rgba(139,92,246,0.3)"
+            }}
+          >
+            + Ajouter un client {plan === "gratuit" ? `(${clients.length}/${limites.gratuit.clients})` : ""}
           </button>
         </div>
 
@@ -99,6 +116,31 @@ export default function Clients() {
               <p style={{ fontSize: "1.8rem", fontWeight: "700", color: kpi.color, margin: 0 }}>{kpi.value}</p>
             </div>
           ))}
+        </div>
+
+        {/* Analytics clients - bloqué plan gratuit */}
+        <div style={{ ...cardStyle, position: "relative", marginBottom: "1.5rem" }}>
+          {!limites[plan].analytics && (
+            <PlanBanner feature="Les analytics avancés des clients" plan="pro" />
+          )}
+          <h2 style={{ fontSize: "14px", fontWeight: "600", margin: "0 0 1rem", color: "rgba(255,255,255,0.8)" }}>
+            📊 Analytics clients
+          </h2>
+          <div className="clients-analytics">
+            {[
+              { label: "Clients fidèles", value: "—", icon: "⭐" },
+              { label: "Panier moyen", value: "—", icon: "🛒" },
+              { label: "Taux de rétention", value: "—", icon: "🔄" },
+            ].map((item, i) => (
+              <div key={i} style={{ background: "rgba(255,255,255,0.02)", borderRadius: "10px", padding: "1rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
+                  <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", margin: 0 }}>{item.label}</p>
+                  <span style={{ fontSize: "16px" }}>{item.icon}</span>
+                </div>
+                <p style={{ fontSize: "1.4rem", fontWeight: "700", color: "#a78bfa", margin: 0 }}>{item.value}</p>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div style={{ ...cardStyle, padding: 0, overflow: "hidden" }}>
