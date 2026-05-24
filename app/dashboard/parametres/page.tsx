@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import { useRouter } from "next/navigation"
 
 const PAYS = [
   { code: "XOF-CI", pays: "Côte d'Ivoire", devise: "Franc CFA (XOF)", flag: "https://flagcdn.com/w40/ci.png" },
@@ -31,6 +32,7 @@ const inputStyle: React.CSSProperties = {
 }
 
 export default function Parametres() {
+  const router = useRouter()
   const [user, setUser] = useState<any>(null)
   const [nomBoutique, setNomBoutique] = useState("")
   const [description, setDescription] = useState("")
@@ -98,6 +100,7 @@ export default function Parametres() {
 
         <div className="param-grid">
 
+          {/* Colonne gauche */}
           <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
 
             <div style={cardStyle}>
@@ -218,6 +221,7 @@ export default function Parametres() {
             </div>
           </div>
 
+          {/* Colonne droite */}
           <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
 
             <div style={cardStyle}>
@@ -245,7 +249,9 @@ export default function Parametres() {
                   </div>
                 ))}
               </div>
-              <button style={{ width: "100%", padding: "10px", borderRadius: "10px", border: "none", background: "linear-gradient(135deg, #8b5cf6, #6d28d9)", color: "#fff", fontSize: "13px", fontWeight: "600", cursor: "pointer", boxShadow: "0 0 12px rgba(139,92,246,0.3)" }}>
+              <button
+                onClick={() => router.push("/pricing")}
+                style={{ width: "100%", padding: "10px", borderRadius: "10px", border: "none", background: "linear-gradient(135deg, #8b5cf6, #6d28d9)", color: "#fff", fontSize: "13px", fontWeight: "600", cursor: "pointer", boxShadow: "0 0 12px rgba(139,92,246,0.3)" }}>
                 Passer au Pro →
               </button>
             </div>

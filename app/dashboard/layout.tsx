@@ -120,12 +120,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.35)", margin: "0 0 10px" }}>
               Passez au Pro pour débloquer l'IA avancée
             </p>
-            <button style={{
-              width: "100%", padding: "7px", borderRadius: "8px", border: "none",
-              background: "linear-gradient(135deg, #8b5cf6, #6d28d9)",
-              color: "#fff", fontSize: "12px", fontWeight: "600", cursor: "pointer",
-              boxShadow: "0 0 12px rgba(139,92,246,0.3)"
-            }}>Passer au Pro →</button>
+            <button
+  onClick={() => router.push("/pricing")}
+  style={{
+    width: "100%", padding: "7px", borderRadius: "8px", border: "none",
+    background: "linear-gradient(135deg, #8b5cf6, #6d28d9)",
+    color: "#fff", fontSize: "12px", fontWeight: "600", cursor: "pointer",
+    boxShadow: "0 0 12px rgba(139,92,246,0.3)"
+  }}
+>
+  Passer au Pro →
+</button>
           </div>
 
           <button onClick={handleLogout} style={{

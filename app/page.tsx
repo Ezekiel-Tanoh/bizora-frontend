@@ -229,7 +229,7 @@ export default function LandingPage() {
         padding: "2rem", textAlign: "center",
         color: "rgba(255,255,255,0.3)", fontSize: "13px"
       }}>
-        © 2025 Bizora · Fait avec 💜 pour l'Afrique
+        © 2025 Bizora · devellopeur independant 
       </footer>
 
     </main>
