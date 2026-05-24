@@ -50,10 +50,7 @@ export default function NouveauMouvementModal({ isOpen, onClose, onSuccess }: Pr
         return
       }
 
-      await api.put(`/products/${productId}`, {
-        stock: newStock,
-      })
-
+      await api.put(`/products/${productId}`, { stock: newStock })
       onSuccess()
       onClose()
       setProductId("")
@@ -67,97 +64,152 @@ export default function NouveauMouvementModal({ isOpen, onClose, onSuccess }: Pr
     }
   }
 
+  const inputStyle = {
+    width: "100%", padding: "10px 14px", borderRadius: "10px",
+    background: "rgba(255,255,255,0.05)",
+    border: "1px solid rgba(255,255,255,0.1)",
+    color: "#fff", fontSize: "13px", outline: "none",
+    boxSizing: "border-box" as any, transition: "border 0.2s"
+  }
+
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl p-6 w-full max-w-md">
+    <div style={{
+      position: "fixed", inset: 0, zIndex: 50,
+      background: "rgba(0,0,0,0.7)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      backdropFilter: "blur(4px)"
+    }}>
+      <div style={{
+        background: "#13131f",
+        border: "1px solid rgba(139,92,246,0.2)",
+        borderRadius: "20px", padding: "2rem",
+        width: "100%", maxWidth: "440px",
+        boxShadow: "0 0 40px rgba(139,92,246,0.1)",
+        fontFamily: "'Inter', sans-serif", color: "#fff"
+      }}>
 
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">Ajouter un mouvement</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+          <h2 style={{ fontSize: "1.1rem", fontWeight: "700", margin: 0 }}>Ajouter un mouvement</h2>
+          <button
+            onClick={onClose}
+            style={{
+              background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: "8px", width: "32px", height: "32px",
+              color: "rgba(255,255,255,0.5)", fontSize: "16px", cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center"
+            }}
+          >✕</button>
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-100 rounded-lg px-3 py-2 mb-4">
-            <p className="text-xs text-red-500">{error}</p>
+          <div style={{
+            background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)",
+            borderRadius: "10px", padding: "10px 14px", marginBottom: "1.25rem"
+          }}>
+            <p style={{ fontSize: "13px", color: "#f87171", margin: 0 }}>{error}</p>
           </div>
         )}
 
-        <div className="flex flex-col gap-4">
+        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
 
+          {/* Type mouvement */}
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Type de mouvement</label>
-            <div className="grid grid-cols-2 gap-2">
+            <label style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", display: "block", marginBottom: "8px" }}>
+              Type de mouvement
+            </label>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
               <button
                 onClick={() => setType("entree")}
-                className={`py-2 rounded-lg text-sm font-medium transition-colors ${
-                  type === "entree"
-                    ? "bg-green-500 text-white"
-                    : "border border-gray-200 text-gray-600 hover:bg-gray-50"
-                }`}
+                style={{
+                  padding: "10px", borderRadius: "10px",
+                  fontSize: "13px", fontWeight: "500", cursor: "pointer",
+                  background: type === "entree" ? "rgba(52,211,153,0.15)" : "rgba(255,255,255,0.05)",
+                  color: type === "entree" ? "#34d399" : "rgba(255,255,255,0.4)",
+                  border: type === "entree" ? "1px solid rgba(52,211,153,0.3)" : "1px solid rgba(255,255,255,0.1)" as any,
+                  transition: "all 0.2s"
+                }}
               >
                 ↑ Entrée stock
               </button>
               <button
                 onClick={() => setType("sortie")}
-                className={`py-2 rounded-lg text-sm font-medium transition-colors ${
-                  type === "sortie"
-                    ? "bg-red-500 text-white"
-                    : "border border-gray-200 text-gray-600 hover:bg-gray-50"
-                }`}
+                style={{
+                  padding: "10px", borderRadius: "10px",
+                  fontSize: "13px", fontWeight: "500", cursor: "pointer",
+                  background: type === "sortie" ? "rgba(239,68,68,0.15)" : "rgba(255,255,255,0.05)",
+                  color: type === "sortie" ? "#f87171" : "rgba(255,255,255,0.4)",
+                  border: type === "sortie" ? "1px solid rgba(239,68,68,0.3)" : "1px solid rgba(255,255,255,0.1)" as any,
+                  transition: "all 0.2s"
+                }}
               >
                 ↓ Sortie stock
               </button>
             </div>
           </div>
 
+          {/* Produit */}
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Produit *</label>
+            <label style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", display: "block", marginBottom: "6px" }}>
+              Produit <span style={{ color: "#a78bfa" }}>*</span>
+            </label>
             <select
               value={productId}
               onChange={(e) => setProductId(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-violet-400 text-gray-600"
+              style={{ ...inputStyle, cursor: "pointer" }}
+              onFocus={e => (e.currentTarget.style.borderColor = "rgba(139,92,246,0.6)")}
+              onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
             >
-              <option value="">Choisir un produit</option>
+              <option value="" style={{ background: "#1a1a2e" }}>Choisir un produit</option>
               {produits.map((p) => (
-                <option key={p.id} value={p.id}>
+                <option key={p.id} value={p.id} style={{ background: "#1a1a2e" }}>
                   {p.name} (Stock actuel: {p.stock})
                 </option>
               ))}
             </select>
           </div>
 
+          {/* Quantité */}
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Quantité *</label>
+            <label style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", display: "block", marginBottom: "6px" }}>
+              Quantité <span style={{ color: "#a78bfa" }}>*</span>
+            </label>
             <input
               type="number"
               placeholder="Ex: 10"
               value={quantite}
               onChange={(e) => setQuantite(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-violet-400"
+              style={inputStyle}
+              onFocus={e => (e.currentTarget.style.borderColor = "rgba(139,92,246,0.6)")}
+              onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
             />
           </div>
 
+          {/* Raison */}
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Raison</label>
+            <label style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", display: "block", marginBottom: "6px" }}>
+              Raison
+            </label>
             <select
               value={raison}
               onChange={(e) => setRaison(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-violet-400 text-gray-600"
+              style={{ ...inputStyle, cursor: "pointer" }}
+              onFocus={e => (e.currentTarget.style.borderColor = "rgba(139,92,246,0.6)")}
+              onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
             >
-              <option value="">Choisir une raison</option>
+              <option value="" style={{ background: "#1a1a2e" }}>Choisir une raison</option>
               {type === "entree" ? (
                 <>
-                  <option value="Achat fournisseur">Achat fournisseur</option>
-                  <option value="Retour client">Retour client</option>
-                  <option value="Correction inventaire">Correction inventaire</option>
+                  <option value="Achat fournisseur" style={{ background: "#1a1a2e" }}>Achat fournisseur</option>
+                  <option value="Retour client" style={{ background: "#1a1a2e" }}>Retour client</option>
+                  <option value="Correction inventaire" style={{ background: "#1a1a2e" }}>Correction inventaire</option>
                 </>
               ) : (
                 <>
-                  <option value="Vente">Vente</option>
-                  <option value="Perte">Perte</option>
-                  <option value="Correction inventaire">Correction inventaire</option>
+                  <option value="Vente" style={{ background: "#1a1a2e" }}>Vente</option>
+                  <option value="Perte" style={{ background: "#1a1a2e" }}>Perte</option>
+                  <option value="Correction inventaire" style={{ background: "#1a1a2e" }}>Correction inventaire</option>
                 </>
               )}
             </select>
@@ -165,19 +217,36 @@ export default function NouveauMouvementModal({ isOpen, onClose, onSuccess }: Pr
 
         </div>
 
-        <div className="flex gap-3 mt-6">
+        <div style={{ display: "flex", gap: "10px", marginTop: "1.5rem" }}>
           <button
             onClick={onClose}
-            className="flex-1 border border-gray-200 text-gray-600 rounded-lg py-2 text-sm hover:bg-gray-50 transition-colors"
+            style={{
+              flex: 1, padding: "10px", borderRadius: "10px",
+              background: "rgba(255,255,255,0.05)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              color: "rgba(255,255,255,0.6)", fontSize: "14px", cursor: "pointer"
+            }}
           >
             Annuler
           </button>
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className={`flex-1 text-white rounded-lg py-2 text-sm transition-colors disabled:opacity-50 ${
-              type === "entree" ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"
-            }`}
+            style={{
+              flex: 1, padding: "10px", borderRadius: "10px",
+              background: loading
+                ? "rgba(139,92,246,0.4)"
+                : type === "entree"
+                  ? "rgba(52,211,153,0.2)"
+                  : "rgba(239,68,68,0.2)",
+              color: type === "entree" ? "#34d399" : "#f87171",
+              border: type === "entree"
+                ? "1px solid rgba(52,211,153,0.3)"
+                : "1px solid rgba(239,68,68,0.3)" as any,
+              fontSize: "14px", fontWeight: "600",
+              cursor: loading ? "not-allowed" : "pointer",
+              transition: "all 0.2s"
+            }}
           >
             {loading ? "Traitement..." : type === "entree" ? "↑ Ajouter au stock" : "↓ Retirer du stock"}
           </button>
