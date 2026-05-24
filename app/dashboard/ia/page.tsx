@@ -145,11 +145,11 @@ export default function IAAssistant() {
             <button key={i}
               onClick={() => setInput(s)}
               style={{
-                fontSize: "12px", padding: "5px 12px", borderRadius: "100px", border: "none",
-                background: "rgba(255,255,255,0.05)",
-                border: "1px solid rgba(255,255,255,0.1)" as any,
-                color: "rgba(255,255,255,0.5)", cursor: "pointer", transition: "all 0.15s"
-              }}
+  fontSize: "12px", padding: "5px 12px", borderRadius: "100px",
+  background: "rgba(255,255,255,0.05)",
+  border: "1px solid rgba(255,255,255,0.1)",
+  color: "rgba(255,255,255,0.5)", cursor: "pointer", transition: "all 0.15s"
+}}
               onMouseEnter={e => {
                 e.currentTarget.style.background = "rgba(139,92,246,0.1)"
                 e.currentTarget.style.color = "#a78bfa"
