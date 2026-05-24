@@ -230,10 +230,10 @@ export default function Commandes() {
                           setIsPaiementOpen(true)
                         }}
                         style={{
-                          fontSize: "12px", padding: "4px 10px", borderRadius: "8px", border: "none",
-                          background: "rgba(139,92,246,0.15)", color: "#a78bfa", cursor: "pointer",
-                          border: "1px solid rgba(139,92,246,0.2)" as any
-                        }}
+  fontSize: "12px", padding: "4px 10px", borderRadius: "8px",
+  background: "rgba(139,92,246,0.15)", color: "#a78bfa", cursor: "pointer",
+  border: "1px solid rgba(139,92,246,0.2)"
+}}
                       >
                         💳 Payer
                       </button>
