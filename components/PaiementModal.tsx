@@ -29,7 +29,7 @@ const methodes = [
   },
   {
     id: "wave",
-    nom: "Wave",
+    nom: "WAVE",
     color: "#1da9f5",
     bg: "#1da9f518",
     logo: (
@@ -38,7 +38,7 @@ const methodes = [
         background: "linear-gradient(135deg, #1da9f5, #0084d4)",
         display: "flex", alignItems: "center", justifyContent: "center",
         flexShrink: 0, fontWeight: "900", fontSize: "16px", color: "#fff"
-      }}>〜</div>
+      }}>WAVE</div>
     )
   },
   {
