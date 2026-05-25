@@ -49,7 +49,6 @@ export default function PaiementModal({ isOpen, onClose, montant = 0 }: Props) {
     setError("")
 
     await new Promise(resolve => setTimeout(resolve, 2000))
-
     setLoading(false)
     setSuccess(true)
   }
@@ -62,6 +61,8 @@ export default function PaiementModal({ isOpen, onClose, montant = 0 }: Props) {
   if (!isOpen) return null
 
   const selectedMethode = methodes.find(m => m.id === methode)
+
+  if (!isOpen) return null
 
   return (
     <div style={{
@@ -107,11 +108,9 @@ export default function PaiementModal({ isOpen, onClose, montant = 0 }: Props) {
               display: "flex", alignItems: "center", justifyContent: "center", gap: "12px"
             }}>
               {selectedMethode && (
-                <img
-                  src={selectedMethode.logo}
-                  alt={selectedMethode.nom}
-                  style={{ width: "36px", height: "36px", borderRadius: "8px", objectFit: "contain" }}
-                />
+                <div>
+                  {selectedMethode.logo}
+                </div>
               )}
               <div style={{ textAlign: "left" }}>
                 <p style={{ fontSize: "1.2rem", fontWeight: "700", color: "#a78bfa", margin: "0 0 2px" }}>
@@ -139,7 +138,6 @@ export default function PaiementModal({ isOpen, onClose, montant = 0 }: Props) {
 
         ) : (
           <>
-            {/* Header */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
               <h2 style={{ fontSize: "1.1rem", fontWeight: "700", margin: 0 }}>
                 Paiement Mobile Money
@@ -167,7 +165,6 @@ export default function PaiementModal({ isOpen, onClose, montant = 0 }: Props) {
               </div>
             )}
 
-            {/* Erreur */}
             {error && (
               <div style={{
                 background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)",
@@ -193,7 +190,8 @@ export default function PaiementModal({ isOpen, onClose, montant = 0 }: Props) {
                         display: "flex", alignItems: "center", gap: "12px",
                         padding: "14px", borderRadius: "14px", cursor: "pointer",
                         border: selected ? `1.5px solid ${m.color}` : "1px solid rgba(255,255,255,0.08)",
-                        background: selected ? `${m.color}18` : "rgba(255,255,255,0.02)",
+                        // use a neutral selected background since `m.bg` is not defined on the methode type
+                        background: selected ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.02)",
                         transition: "all 0.2s", textAlign: "left"
                       }}
                       onMouseEnter={e => {
@@ -298,3 +296,4 @@ export default function PaiementModal({ isOpen, onClose, montant = 0 }: Props) {
     </div>
   )
 }
+ 
