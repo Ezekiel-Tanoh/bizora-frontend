@@ -81,11 +81,65 @@ export default function Pricing() {
   const [error, setError] = useState("")
 
   const methodes = [
-    { id: "orange", nom: "Orange Money", color: "#f97316", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Orange_logo.svg/240px-Orange_logo.svg.png" },
-    { id: "wave", nom: "Wave", color: "#1da9f5", logo: "https://play-lh.googleusercontent.com/MEo8fxOMJGMmMSPMkrOTiVC9aYNiQhWaWKlLLB4RCnYMxFIaHHLrXQiRWVxwINMD_Q=w240-h480-rw" },
-    { id: "mtn", nom: "MTN Money", color: "#ffcc00", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/New-mtn-logo.jpg/240px-New-mtn-logo.jpg" },
-    { id: "moov", nom: "Moov Money", color: "#0066cc", logo: "https://play-lh.googleusercontent.com/cHkSFkCxcOElHBSqIYpGu0HqZXimrXMfbkBNzpLLVhGBRH6g8iFWXfNUumPJ9SXuLA=w240-h480-rw" },
-  ]
+  {
+    id: "orange",
+    nom: "Orange Money",
+    color: "#ff6600",
+    bg: "#ff660018",
+    logo: (
+      <div style={{
+        width: "42px", height: "42px", borderRadius: "10px",
+        background: "#ff6600",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        flexShrink: 0, fontWeight: "900", fontSize: "13px", color: "#fff",
+      }}>OM</div>
+    )
+  },
+  {
+    id: "wave",
+    nom: "WAVE",
+    color: "#1da9f5",
+    bg: "#1da9f518",
+    logo: (
+      <div style={{
+        width: "42px", height: "42px", borderRadius: "10px",
+        background: "linear-gradient(135deg, #1da9f5, #0084d4)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        flexShrink: 0, fontWeight: "900", fontSize: "12px", color: "#fff",  // ← 13px→12px
+        letterSpacing: "-0.5px"  // ← serré pour tenir
+      }}>WAVE</div>
+    )
+  },
+  {
+    id: "mtn",
+    nom: "MTN Money",
+    color: "#ffcc00",
+    bg: "#ffcc0018",
+    logo: (
+      <div style={{
+        width: "42px", height: "42px", borderRadius: "10px",
+        background: "#ffcc00",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        flexShrink: 0, fontWeight: "900", fontSize: "11px", color: "#000",
+      }}>MTN</div>
+    )
+  },
+  {
+    id: "moov",
+    nom: "Moov Money",
+    color: "#0066cc",
+    bg: "#0066cc18",
+    logo: (
+      <div style={{
+        width: "42px", height: "42px", borderRadius: "10px",
+        background: "linear-gradient(135deg, #0066cc, #004499)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        flexShrink: 0, fontWeight: "900", fontSize: "11px", color: "#fff",
+      }}>MOOV</div>
+    )
+  },
+]
+
 
   const planSelectionne = plans.find(p => p.id === planChoisi)
   const montant = planSelectionne ? (annuel ? planSelectionne.prix_annuel : planSelectionne.prix_mensuel) : 0
