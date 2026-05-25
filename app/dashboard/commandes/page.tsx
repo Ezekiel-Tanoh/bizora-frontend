@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import api from "@/lib/api"
 import NouvelleCommandeModal from "@/components/NouvelleCommandeModal"
-import PaiementModal from "@/components/PaiementModal"
+
 
 const cardStyle = {
   background: "rgba(255,255,255,0.03)",
@@ -15,10 +15,7 @@ const cardStyle = {
 export default function Commandes() {
   const [commandes, setCommandes] = useState<any[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [isPaiementOpen, setIsPaiementOpen] = useState(false)
-  const [montantPaiement, setMontantPaiement] = useState(0)
   const [loading, setLoading] = useState(true)
-
   const fetchCommandes = async () => {
     try {
       const user = JSON.parse(localStorage.getItem("bizora_user") || "{}")
@@ -83,8 +80,6 @@ export default function Commandes() {
       <div style={{ color: "#fff", fontFamily: "'Inter', sans-serif" }}>
 
         <NouvelleCommandeModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSuccess={fetchCommandes} />
-        <PaiementModal isOpen={isPaiementOpen} onClose={() => setIsPaiementOpen(false)} montant={montantPaiement} />
-
         <div className="cmd-header">
           <div>
             <h1 style={{ fontSize: "1.5rem", fontWeight: "700", margin: 0 }}>Commandes</h1>
@@ -182,12 +177,19 @@ export default function Commandes() {
                             <option style={{ background: "#1a1a2e" }} value="delivered">Livré</option>
                             <option style={{ background: "#1a1a2e" }} value="cancelled">Annulé</option>
                           </select>
-                          <button
-                            onClick={() => { setMontantPaiement(commande.total); setIsPaiementOpen(true) }}
-                            style={{ fontSize: "12px", padding: "4px 10px", borderRadius: "8px", background: "rgba(139,92,246,0.15)", color: "#a78bfa", cursor: "pointer", border: "1px solid rgba(139,92,246,0.2)" }}
-                          >
-                            💳 Payer
-                          </button>
+                          <td style={{ padding: "12px 16px" }}>
+                           <select
+                             value={commande.status}
+                              onChange={(e) => handleUpdateStatus(commande.id, e.target.value)}
+                             style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "4px 8px", color: "rgba(255,255,255,0.6)", fontSize: "12px", outline: "none" }}
+                              >
+                             <option style={{ background: "#1a1a2e" }} value="pending">En attente</option>
+                             <option style={{ background: "#1a1a2e" }} value="confirmed">Confirmé</option>
+                             <option style={{ background: "#1a1a2e" }} value="shipped">Expédié</option>
+                             <option style={{ background: "#1a1a2e" }} value="delivered">Livré</option>
+                             <option style={{ background: "#1a1a2e" }} value="cancelled">Annulé</option>
+                           </select>
+                           </td>
                         </div>
                       </td>
                     </tr>
@@ -232,12 +234,6 @@ export default function Commandes() {
                         <option style={{ background: "#1a1a2e" }} value="delivered">Livré</option>
                         <option style={{ background: "#1a1a2e" }} value="cancelled">Annulé</option>
                       </select>
-                      <button
-                        onClick={() => { setMontantPaiement(commande.total); setIsPaiementOpen(true) }}
-                        style={{ fontSize: "11px", padding: "4px 8px", borderRadius: "8px", background: "rgba(139,92,246,0.15)", color: "#a78bfa", cursor: "pointer", border: "1px solid rgba(139,92,246,0.2)" }}
-                      >
-                        💳
-                      </button>
                     </div>
                   </div>
                 </div>

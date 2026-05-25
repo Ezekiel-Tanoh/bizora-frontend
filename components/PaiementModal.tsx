@@ -29,7 +29,7 @@ const methodes = [
   },
   {
     id: "wave",
-    nom: "WAVE",
+    nom: "wave",
     color: "#1da9f5",
     bg: "#1da9f518",
     logo: (

@@ -137,9 +137,20 @@ export default function NouveauProduitModal({ isOpen, onClose, onSuccess }: Prop
               onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
             >
               <option value="" style={{ background: "#1a1a2e" }}>Choisir une catégorie</option>
-              {["Mode", "Alimentation", "Électronique", "Beauté", "Maison", "Autre"].map(c => (
-                <option key={c} value={c} style={{ background: "#1a1a2e" }}>{c}</option>
-              ))}
+                  {[
+  "Mode & Vêtements",
+  "Alimentation & Boissons",
+  "Électronique & High-Tech",
+  "Beauté & Cosmétiques",
+  "Maison & Décoration",
+  "Santé & Pharmacie",
+  "Sports & Loisirs",
+  "Enfants & Jouets",
+  "Agriculture & Élevage",
+  "Autre"
+].map(c => (
+  <option key={c} value={c} style={{ background: "#1a1a2e" }}>{c}</option>
+))}
             </select>
           </div>
 

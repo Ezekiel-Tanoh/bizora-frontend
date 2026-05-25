@@ -197,9 +197,21 @@ export default function Produits() {
             <select value={categorie} onChange={e => setCategorie(e.target.value)}
               style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "10px", padding: "8px 14px", color: "rgba(255,255,255,0.6)", fontSize: "13px", outline: "none" }}
             >
-              {["Toutes", "Mode", "Alimentation", "Électronique", "Beauté"].map(c => (
-                <option key={c} style={{ background: "#1a1a2e" }}>{c}</option>
-              ))}
+             {[
+  "Toutes",
+  "Mode & Vêtements",
+  "Alimentation & Boissons",
+  "Électronique & High-Tech",
+  "Beauté & Cosmétiques",
+  "Maison & Décoration",
+  "Santé & Pharmacie",
+  "Sports & Loisirs",
+  "Enfants & Jouets",
+  "Agriculture & Élevage",
+  "Autre"
+].map(c => (
+  <option key={c} style={{ background: "#1a1a2e" }}>{c}</option>
+))}
             </select>
           </div>
 
