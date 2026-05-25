@@ -1,10 +1,11 @@
 "use client"
 
+import { Suspense } from "react"
 import { useEffect, useState } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import api from "@/lib/api"
 
-export default function ConfirmationPage() {
+function ConfirmationContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [statut, setStatut] = useState<"loading" | "success" | "failed" | "cancel">("loading")
@@ -142,5 +143,13 @@ export default function ConfirmationPage() {
 
       </div>
     </div>
+  )
+}
+
+export default function ConfirmationPage() {
+  return (
+    <Suspense fallback={<div style={{ color: "#fff", textAlign: "center", marginTop: "5rem" }}>Chargement...</div>}>
+      <ConfirmationContent />
+    </Suspense>
   )
 }
