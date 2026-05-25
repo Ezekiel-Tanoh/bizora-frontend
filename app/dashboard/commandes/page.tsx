@@ -223,17 +223,6 @@ export default function Commandes() {
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <p style={{ fontSize: "14px", fontWeight: "600", color: "#a78bfa", margin: 0 }}>{commande.total?.toLocaleString()} FCFA</p>
                     <div style={{ display: "flex", gap: "6px" }}>
-                      <select
-                        value={commande.status}
-                        onChange={(e) => handleUpdateStatus(commande.id, e.target.value)}
-                        style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "4px 6px", color: "rgba(255,255,255,0.6)", fontSize: "11px", outline: "none" }}
-                      >
-                        <option style={{ background: "#1a1a2e" }} value="pending">En attente</option>
-                        <option style={{ background: "#1a1a2e" }} value="confirmed">Confirmé</option>
-                        <option style={{ background: "#1a1a2e" }} value="shipped">Expédié</option>
-                        <option style={{ background: "#1a1a2e" }} value="delivered">Livré</option>
-                        <option style={{ background: "#1a1a2e" }} value="cancelled">Annulé</option>
-                      </select>
                     </div>
                   </div>
                 </div>
