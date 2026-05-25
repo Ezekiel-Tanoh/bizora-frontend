@@ -222,7 +222,7 @@ export default function Commandes() {
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <p style={{ fontSize: "14px", fontWeight: "600", color: "#a78bfa", margin: 0 }}>{commande.total?.toLocaleString()} FCFA</p>
-                    <div style={{ display: "flex", gap: "6px" }}>
+                    <div style={{ display: "flex", gap: "6px" }}> 
                     </div>
                   </div>
                 </div>
