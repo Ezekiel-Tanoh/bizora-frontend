@@ -16,7 +16,7 @@ export default function Commandes() {
   const [commandes, setCommandes] = useState<any[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isPaiementOpen, setIsPaiementOpen] = useState(false)
-  const [montantPaiement, setMontantPaiement] = useState(0)
+  const [paiementData, setPaiementData] = useState<{ montant: number; orderId: string } | null>(null)
   const [loading, setLoading] = useState(true)
 
   const fetchCommandes = async () => {
@@ -44,23 +44,23 @@ export default function Commandes() {
 
   const getStatusStyle = (status: string) => {
     switch (status) {
-      case "pending": return { background: "rgba(251,191,36,0.1)", color: "#fbbf24", border: "1px solid rgba(251,191,36,0.2)" }
-      case "confirmed": return { background: "rgba(59,130,246,0.1)", color: "#60a5fa", border: "1px solid rgba(59,130,246,0.2)" }
-      case "shipped": return { background: "rgba(139,92,246,0.1)", color: "#a78bfa", border: "1px solid rgba(139,92,246,0.2)" }
-      case "delivered": return { background: "rgba(52,211,153,0.1)", color: "#34d399", border: "1px solid rgba(52,211,153,0.2)" }
-      case "cancelled": return { background: "rgba(239,68,68,0.1)", color: "#f87171", border: "1px solid rgba(239,68,68,0.2)" }
-      default: return { background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.4)", border: "1px solid rgba(255,255,255,0.1)" }
+      case "pending":   return { background: "rgba(251,191,36,0.1)",  color: "#fbbf24", border: "1px solid rgba(251,191,36,0.2)" }
+      case "confirmed": return { background: "rgba(59,130,246,0.1)",  color: "#60a5fa", border: "1px solid rgba(59,130,246,0.2)" }
+      case "shipped":   return { background: "rgba(139,92,246,0.1)",  color: "#a78bfa", border: "1px solid rgba(139,92,246,0.2)" }
+      case "delivered": return { background: "rgba(52,211,153,0.1)",  color: "#34d399", border: "1px solid rgba(52,211,153,0.2)" }
+      case "cancelled": return { background: "rgba(239,68,68,0.1)",   color: "#f87171", border: "1px solid rgba(239,68,68,0.2)" }
+      default:          return { background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.4)", border: "1px solid rgba(255,255,255,0.1)" }
     }
   }
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case "pending": return "En attente"
+      case "pending":   return "En attente"
       case "confirmed": return "Confirmé"
-      case "shipped": return "Expédié"
+      case "shipped":   return "Expédié"
       case "delivered": return "Livré"
       case "cancelled": return "Annulé"
-      default: return status
+      default:          return status
     }
   }
 
@@ -83,7 +83,13 @@ export default function Commandes() {
       <div style={{ color: "#fff", fontFamily: "'Inter', sans-serif" }}>
 
         <NouvelleCommandeModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSuccess={fetchCommandes} />
-        <PaiementModal isOpen={isPaiementOpen} onClose={() => setIsPaiementOpen(false)} montant={montantPaiement} />
+        <PaiementModal
+          isOpen={isPaiementOpen}
+          onClose={() => setIsPaiementOpen(false)}
+          montant={paiementData?.montant ?? 0}
+          orderId={paiementData?.orderId}
+          onPaymentSuccess={fetchCommandes}
+        />
 
         <div className="cmd-header">
           <div>
@@ -102,9 +108,9 @@ export default function Commandes() {
 
         <div className="cmd-kpi">
           {[
-            { label: "Total commandes", value: commandes.length, color: "#fff", icon: "🛒" },
-            { label: "En attente", value: commandes.filter(c => c.status === "pending").length, color: "#fbbf24", icon: "⏳" },
-            { label: "Livrées", value: commandes.filter(c => c.status === "delivered").length, color: "#34d399", icon: "✅" },
+            { label: "Total commandes",  value: commandes.length, color: "#fff", icon: "🛒" },
+            { label: "En attente",       value: commandes.filter(c => c.status === "pending").length, color: "#fbbf24", icon: "⏳" },
+            { label: "Livrées",          value: commandes.filter(c => c.status === "delivered").length, color: "#34d399", icon: "✅" },
             { label: "Chiffre d'affaires", value: `${commandes.reduce((sum, c) => sum + c.total, 0).toLocaleString()} FCFA`, color: "#a78bfa", icon: "💰" },
           ].map((kpi, i) => (
             <div key={i} style={{ ...cardStyle, transition: "all 0.2s" }}
@@ -183,7 +189,7 @@ export default function Commandes() {
                             <option style={{ background: "#1a1a2e" }} value="cancelled">Annulé</option>
                           </select>
                           <button
-                            onClick={() => { setMontantPaiement(commande.total); setIsPaiementOpen(true) }}
+                            onClick={() => { setPaiementData({ montant: commande.total, orderId: commande.id }); setIsPaiementOpen(true) }}
                             style={{ fontSize: "12px", padding: "4px 10px", borderRadius: "8px", background: "rgba(139,92,246,0.15)", color: "#a78bfa", cursor: "pointer", border: "1px solid rgba(139,92,246,0.2)" }}
                           >
                             💳 Payer
@@ -233,7 +239,7 @@ export default function Commandes() {
                         <option style={{ background: "#1a1a2e" }} value="cancelled">Annulé</option>
                       </select>
                       <button
-                        onClick={() => { setMontantPaiement(commande.total); setIsPaiementOpen(true) }}
+                        onClick={() => { setPaiementData({ montant: commande.total, orderId: commande.id }); setIsPaiementOpen(true) }}
                         style={{ fontSize: "11px", padding: "4px 8px", borderRadius: "8px", background: "rgba(139,92,246,0.15)", color: "#a78bfa", cursor: "pointer", border: "1px solid rgba(139,92,246,0.2)" }}
                       >
                         💳
@@ -244,6 +250,7 @@ export default function Commandes() {
               ))
             )}
           </div>
+
         </div>
       </div>
     </>
