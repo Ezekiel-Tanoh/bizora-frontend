@@ -1,46 +1,90 @@
 "use client"
 
 import { useState } from "react"
+import api from "@/lib/api"
 
 interface Props {
   isOpen: boolean
   onClose: () => void
   montant?: number
+  description?: string
+  clientNom?: string
+  clientTelephone?: string
 }
 
-export default function PaiementModal({ isOpen, onClose, montant = 0 }: Props) {
+const methodes = [
+  {
+    id: "orange",
+    nom: "Orange Money",
+    color: "#ff6600",
+    bg: "#ff660018",
+    logo: (
+      <div style={{
+        width: "42px", height: "42px", borderRadius: "10px",
+        background: "#ff6600",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        flexShrink: 0, fontWeight: "900", fontSize: "13px", color: "#fff",
+      }}>OM</div>
+    )
+  },
+  {
+    id: "wave",
+    nom: "Wave",
+    color: "#1da9f5",
+    bg: "#1da9f518",
+    logo: (
+      <div style={{
+        width: "42px", height: "42px", borderRadius: "10px",
+        background: "linear-gradient(135deg, #1da9f5, #0084d4)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        flexShrink: 0, fontWeight: "900", fontSize: "16px", color: "#fff"
+      }}>〜</div>
+    )
+  },
+  {
+    id: "mtn",
+    nom: "MTN Money",
+    color: "#ffcc00",
+    bg: "#ffcc0018",
+    logo: (
+      <div style={{
+        width: "42px", height: "42px", borderRadius: "10px",
+        background: "#ffcc00",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        flexShrink: 0, fontWeight: "900", fontSize: "11px", color: "#000",
+      }}>MTN</div>
+    )
+  },
+  {
+    id: "moov",
+    nom: "Moov Money",
+    color: "#0066cc",
+    bg: "#0066cc18",
+    logo: (
+      <div style={{
+        width: "42px", height: "42px", borderRadius: "10px",
+        background: "linear-gradient(135deg, #0066cc, #004499)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        flexShrink: 0, fontWeight: "900", fontSize: "11px", color: "#fff",
+      }}>MOOV</div>
+    )
+  },
+]
+
+export default function PaiementModal({
+  isOpen,
+  onClose,
+  montant = 0,
+  description = "Paiement Bizora",
+  clientNom = "",
+  clientTelephone = ""
+}: Props) {
   const [methode, setMethode] = useState("")
-  const [telephone, setTelephone] = useState("")
+  const [telephone, setTelephone] = useState(clientTelephone)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState("")
-
-  const methodes = [
-    {
-      id: "orange",
-      nom: "Orange Money",
-      color: "#ff6600",
-      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Orange_logo.svg/240px-Orange_logo.svg.png",
-    },
-    {
-      id: "wave",
-      nom: "Wave",
-      color: "#1da9f5",
-      logo: "https://play-lh.googleusercontent.com/MEo8fxOMJGMmMSPMkrOTiVC9aYNiQhWaWKlLLB4RCnYMxFIaHHLrXQiRWVxwINMD_Q=w240-h480-rw",
-    },
-    {
-      id: "mtn",
-      nom: "MTN Money",
-      color: "#ffcc00",
-      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/New-mtn-logo.jpg/240px-New-mtn-logo.jpg",
-    },
-    {
-      id: "moov",
-      nom: "Moov Money",
-      color: "#0066cc",
-      logo: "https://play-lh.googleusercontent.com/cHkSFkCxcOElHBSqIYpGu0HqZXimrXMfbkBNzpLLVhGBRH6g8iFWXfNUumPJ9SXuLA=w240-h480-rw",
-    },
-  ]
+  const [paymentUrl, setPaymentUrl] = useState("")
 
   const handlePayer = async () => {
     if (!methode) { setError("Choisissez un moyen de paiement"); return }
@@ -48,17 +92,34 @@ export default function PaiementModal({ isOpen, onClose, montant = 0 }: Props) {
     setLoading(true)
     setError("")
 
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    setLoading(false)
-    setSuccess(true)
+    try {
+      const response = await api.post("/payments/create", {
+        montant,
+        description,
+        clientNom: clientNom || "Client Bizora",
+        clientTelephone: telephone,
+        returnUrl: `${window.location.origin}/dashboard/commandes?payment=success`,
+        cancelUrl: `${window.location.origin}/dashboard/commandes?payment=cancel`,
+      })
+
+      if (response.data.success) {
+        setPaymentUrl(response.data.paymentUrl)
+        window.open(response.data.paymentUrl, "_blank")
+        setSuccess(true)
+      } else {
+        setError("Erreur lors de la création du paiement")
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Erreur de connexion")
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleClose = () => {
-    setMethode(""); setTelephone(""); setSuccess(false); setError("")
+    setMethode(""); setTelephone(""); setSuccess(false); setError(""); setPaymentUrl("")
     onClose()
   }
-
-  if (!isOpen) return null
 
   const selectedMethode = methodes.find(m => m.id === methode)
 
@@ -91,13 +152,10 @@ export default function PaiementModal({ isOpen, onClose, montant = 0 }: Props) {
             }}>✅</div>
 
             <h2 style={{ fontSize: "1.2rem", fontWeight: "700", marginBottom: "0.5rem" }}>
-              Paiement initié !
+              Page de paiement ouverte !
             </h2>
-            <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.4)", marginBottom: "0.5rem" }}>
-              Demande envoyée au numéro
-            </p>
-            <p style={{ fontSize: "15px", fontWeight: "600", color: "#a78bfa", marginBottom: "1.5rem" }}>
-              {telephone}
+            <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.4)", marginBottom: "1.5rem" }}>
+              Complétez le paiement sur la page PayDunya qui vient de s'ouvrir.
             </p>
 
             <div style={{
@@ -105,26 +163,31 @@ export default function PaiementModal({ isOpen, onClose, montant = 0 }: Props) {
               border: "1px solid rgba(139,92,246,0.2)",
               borderRadius: "12px", padding: "1rem",
               marginBottom: "1.5rem",
-              display: "flex", alignItems: "center", justifyContent: "center", gap: "12px"
             }}>
-              {selectedMethode && (
-                <div>
-                  {selectedMethode.logo}
-                </div>
-              )}
-              <div style={{ textAlign: "left" }}>
-                <p style={{ fontSize: "1.2rem", fontWeight: "700", color: "#a78bfa", margin: "0 0 2px" }}>
-                  {montant.toLocaleString()} FCFA
-                </p>
-                <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.35)", margin: 0 }}>
-                  via {selectedMethode?.nom}
-                </p>
-              </div>
+              <p style={{ fontSize: "1.2rem", fontWeight: "700", color: "#a78bfa", margin: "0 0 4px" }}>
+                {montant.toLocaleString()} FCFA
+              </p>
+              <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.35)", margin: 0 }}>
+                via {selectedMethode?.nom}
+              </p>
             </div>
 
-            <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.3)", marginBottom: "1.5rem" }}>
-              Confirmez le paiement sur votre téléphone
-            </p>
+            {paymentUrl && (
+              <a
+                href={paymentUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "block", marginBottom: "1rem",
+                  padding: "10px", borderRadius: "10px",
+                  background: "rgba(139,92,246,0.1)",
+                  border: "1px solid rgba(139,92,246,0.2)",
+                  color: "#a78bfa", fontSize: "13px", textDecoration: "none"
+                }}
+              >
+                🔗 Ouvrir à nouveau la page de paiement
+              </a>
+            )}
 
             <button onClick={handleClose} style={{
               width: "100%", padding: "12px", borderRadius: "10px", border: "none",
@@ -149,7 +212,6 @@ export default function PaiementModal({ isOpen, onClose, montant = 0 }: Props) {
               }}>✕</button>
             </div>
 
-            {/* Montant */}
             {montant > 0 && (
               <div style={{
                 background: "rgba(139,92,246,0.08)",
@@ -174,7 +236,6 @@ export default function PaiementModal({ isOpen, onClose, montant = 0 }: Props) {
               </div>
             )}
 
-            {/* Méthodes avec vrais logos */}
             <div style={{ marginBottom: "1.25rem" }}>
               <label style={{ fontSize: "13px", color: "rgba(255,255,255,0.5)", display: "block", marginBottom: "10px" }}>
                 Choisir le moyen de paiement
@@ -190,34 +251,13 @@ export default function PaiementModal({ isOpen, onClose, montant = 0 }: Props) {
                         display: "flex", alignItems: "center", gap: "12px",
                         padding: "14px", borderRadius: "14px", cursor: "pointer",
                         border: selected ? `1.5px solid ${m.color}` : "1px solid rgba(255,255,255,0.08)",
-                        // use a neutral selected background since `m.bg` is not defined on the methode type
-                        background: selected ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.02)",
+                        background: selected ? m.bg : "rgba(255,255,255,0.02)",
                         transition: "all 0.2s", textAlign: "left"
                       }}
-                      onMouseEnter={e => {
-                        if (!selected) e.currentTarget.style.background = "rgba(255,255,255,0.05)"
-                      }}
-                      onMouseLeave={e => {
-                        if (!selected) e.currentTarget.style.background = "rgba(255,255,255,0.02)"
-                      }}
+                      onMouseEnter={e => { if (!selected) e.currentTarget.style.background = "rgba(255,255,255,0.05)" }}
+                      onMouseLeave={e => { if (!selected) e.currentTarget.style.background = "rgba(255,255,255,0.02)" }}
                     >
-                      {/* Logo */}
-                      <div style={{
-                        width: "42px", height: "42px", borderRadius: "10px",
-                        background: "#fff",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        flexShrink: 0, overflow: "hidden",
-                        boxShadow: selected ? `0 0 12px ${m.color}40` : "none"
-                      }}>
-                        <img
-                          src={m.logo}
-                          alt={m.nom}
-                          style={{ width: "36px", height: "36px", objectFit: "contain" }}
-                          onError={e => {
-                            e.currentTarget.style.display = "none"
-                          }}
-                        />
-                      </div>
+                      {m.logo}
                       <div>
                         <p style={{
                           fontSize: "13px", fontWeight: "600", margin: "0 0 2px",
@@ -235,7 +275,6 @@ export default function PaiementModal({ isOpen, onClose, montant = 0 }: Props) {
               </div>
             </div>
 
-            {/* Téléphone */}
             <div style={{ marginBottom: "1.5rem" }}>
               <label style={{ fontSize: "13px", color: "rgba(255,255,255,0.5)", display: "block", marginBottom: "6px" }}>
                 Numéro de téléphone
@@ -260,7 +299,6 @@ export default function PaiementModal({ isOpen, onClose, montant = 0 }: Props) {
               </p>
             </div>
 
-            {/* Boutons */}
             <div style={{ display: "flex", gap: "10px" }}>
               <button onClick={handleClose} style={{
                 flex: 1, padding: "11px", borderRadius: "10px",
@@ -291,9 +329,7 @@ export default function PaiementModal({ isOpen, onClose, montant = 0 }: Props) {
             </div>
           </>
         )}
-
       </div>
     </div>
   )
 }
- 
