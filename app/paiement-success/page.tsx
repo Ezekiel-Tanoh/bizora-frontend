@@ -1,9 +1,9 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 
-export default function PaiementSuccess() {
+function PaiementSuccessContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const plan = searchParams.get("plan")
@@ -176,5 +176,20 @@ export default function PaiementSuccess() {
 
       </div>
     </main>
+  )
+}
+
+export default function PaiementSuccess() {
+  return (
+    <Suspense fallback={
+      <div style={{
+        background: "#0a0a0f", minHeight: "100vh",
+        display: "flex", alignItems: "center", justifyContent: "center"
+      }}>
+        <div style={{ color: "rgba(255,255,255,0.3)", fontSize: "14px" }}>Chargement...</div>
+      </div>
+    }>
+      <PaiementSuccessContent />
+    </Suspense>
   )
 }
