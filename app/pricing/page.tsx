@@ -135,7 +135,7 @@ export default function Pricing() {
         clientNom: user.name || "Client Bizora",
         clientEmail: user.email || "",
         clientTelephone: telephone,
-        returnUrl: `${window.location.origin}/dashboard/abonnements?payment=success&plan=${planChoisi}`,
+        returnUrl: `${window.location.origin}/paiement-success?plan=${planChoisi}`,
         cancelUrl: `${window.location.origin}/dashboard/abonnements?payment=cancel`,
       })
 
@@ -172,7 +172,7 @@ export default function Pricing() {
         @media (max-width: 768px) { .pricing-grid { grid-template-columns: 1fr; } }
       `}</style>
 
-      <div style={{ color: "#fff", fontFamily: "'Inter', sans-serif" }}>
+      <div style={{ color: "#481cb7", fontFamily: "'Inter', sans-serif" }}>
 
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: "3rem" }}>
