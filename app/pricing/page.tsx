@@ -81,7 +81,7 @@ const methodes = [
   {
     id: "wave", nom: "Wave", color: "#1da9f5", bg: "#1da9f518",
     logo: (
-      <div style={{ width: "36px", height: "36px", borderRadius: "8px", background: "linear-gradient(135deg, #1da9f5, #0084d4)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "900", fontSize: "16px", color: "#fff" }}>〜</div>
+      <div style={{ width: "36px", height: "36px", borderRadius: "8px", background: "linear-gradient(135deg, #1da9f5, #0084d4)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "900", fontSize: "16px", color: "#fff" }}> 🐧</div>
     )
   },
   {
